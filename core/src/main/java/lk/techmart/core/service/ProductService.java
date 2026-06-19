@@ -1,0 +1,15 @@
+package lk.techmart.core.service;
+
+import jakarta.ejb.Local;
+import lk.techmart.core.dto.ProductDTO;
+
+import java.util.List;
+
+@Local
+public interface ProductService {
+
+    void addProduct(ProductDTO productDTO);
+
+    List<ProductDTO> getAllProducts();
+
+}
