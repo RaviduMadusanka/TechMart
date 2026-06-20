@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import lk.techmart.core.dto.ProductDTO;
 import lk.techmart.core.entity.Customer;
 import lk.techmart.core.entity.Product;
+import lk.techmart.core.service.InventoryService;
 import lk.techmart.core.service.ProductService;
 import lk.techmart.ejb.CustomerServiceBean;
 import lk.techmart.ejb.OrderServiceBean;
@@ -36,6 +37,9 @@ public class CartServlet extends HttpServlet {
     @EJB
     private CustomerServiceBean customerService;
 
+    @EJB
+    private InventoryService inventoryService;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -60,7 +64,6 @@ public class CartServlet extends HttpServlet {
                 pDTO.setWeight(new BigDecimal("2.5"));
                 pDTO.setStatus("ACTIVE");
 
-                // Service එකට යවන්නේ DTO එකක්
                 productService.addProduct(pDTO);
                 out.println("<p style='color:green'>Product database ekata add wuna (DTO haraha)!</p>");
             }
@@ -69,7 +72,10 @@ public class CartServlet extends HttpServlet {
 
             List<ProductDTO> products = productService.getAllProducts();
             for (ProductDTO p : products) {
-                out.println("<p>ID: " + p.getProductId() + " | Name: " + p.getProductName() + " | Price: Rs." + p.getPrice() + " </p>");
+                int availableStock = inventoryService.getAvailableStock(p.getProductId());
+                out.println("<p>ID: " + p.getProductId() + " | Name: " + p.getProductName() +
+                        " | Price: Rs." + p.getPrice() +
+                        " | <b style='color:purple;'>Available Stock: " + availableStock + "</b></p>");
                 out.println("<a href='?action=add_to_cart&pid=" + p.getProductId() + "'>[ Cart ekata Danna ]</a><br>");
             }
 
@@ -80,7 +86,6 @@ public class CartServlet extends HttpServlet {
                 out.println("<p style='color:blue'>Item eka Cart Memory ekata add wuna!</p>");
             }
 
-            // 3.5 Checkout කිරීම (Order Processing)
             if ("checkout".equals(action)) {
                 Map<Long, Integer> cart = shoppingCart.getCartItems();
                 if (cart.isEmpty()) {

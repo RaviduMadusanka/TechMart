@@ -1,5 +1,6 @@
 package lk.techmart.ejb;
 
+import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -7,6 +8,7 @@ import lk.techmart.core.entity.Customer;
 import lk.techmart.core.entity.Orders;
 import lk.techmart.core.entity.OrderItem;
 import lk.techmart.core.entity.Product;
+import lk.techmart.core.service.InventoryService;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -16,6 +18,9 @@ public class OrderServiceBean {
 
     @PersistenceContext(unitName = "techmartPU")
     private EntityManager em;
+
+    @EJB
+    private InventoryService inventoryService;
 
     public Long placeOrder(Long customerId, Map<Long, Integer> cartItems) throws Exception {
 
@@ -37,6 +42,11 @@ public class OrderServiceBean {
         for (Map.Entry<Long, Integer> entry : cartItems.entrySet()) {
             Long productId = entry.getKey();
             Integer quantity = entry.getValue();
+
+            boolean stockAvailable = inventoryService.reduceStock(productId, quantity);
+            if (!stockAvailable) {
+                throw new Exception("Sorry! Product ID: " + productId + " eke oya illana tharam stock naha!");
+            }
 
             Product product = em.find(Product.class, productId);
             if (product == null) {
