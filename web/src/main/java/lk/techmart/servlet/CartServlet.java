@@ -1,17 +1,14 @@
-package lk.techmart.web;
+package lk.techmart.servlet;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.ServletException;
 import lk.techmart.core.dto.ProductDTO;
 import lk.techmart.core.entity.Customer;
-import lk.techmart.core.entity.Product;
 import lk.techmart.core.service.InventoryService;
 import lk.techmart.core.service.ProductService;
 import lk.techmart.ejb.CustomerServiceBean;
 import lk.techmart.ejb.OrderServiceBean;
 import lk.techmart.ejb.ShoppingCartBean;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,9 +30,6 @@ public class CartServlet extends HttpServlet {
 
     @EJB
     private OrderServiceBean orderService;
-
-    @EJB
-    private CustomerServiceBean customerService;
 
     @EJB
     private InventoryService inventoryService;
@@ -91,10 +85,23 @@ public class CartServlet extends HttpServlet {
                 if (cart.isEmpty()) {
                     out.println("<p style='color:red'>Cart eka his! Checkout karanna ba.</p>");
                 } else {
-                    Customer dummyCustomer = customerService.createTestCustomer();
-                    Long orderId = orderService.placeOrder(dummyCustomer.getCustomerId(), cart);
-                    shoppingCart.clearCart();
-                    out.println("<h3 style='color:green; background:#e8f5e9; padding:10px;'>Order eka sarthakai! 🎉 Order ID: " + orderId + "</h3>");
+                    jakarta.servlet.http.HttpSession session = request.getSession(false);
+
+                    if (session != null && session.getAttribute("loggedUserId") != null) {
+
+                        Long realCustomerId = (Long) session.getAttribute("loggedUserId");
+
+                        try {
+                            Long orderId = orderService.placeOrder(realCustomerId, cart);
+                            shoppingCart.clearCart();
+                            out.println("<h3 style='color:green; background:#e8f5e9; padding:10px;'>Order eka sarthakai! 🎉 Order ID: " + orderId + "</h3>");
+                        } catch (Exception e) {
+                            out.println("<p style='color:red'>Error placing order: " + e.getMessage() + "</p>");
+                        }
+
+                    } else {
+                        out.println("<p style='color:red'>Checkout karanna kalin karunakara Login wenna! <br><br> <a href='auth?action=login' style='padding:5px 10px; background:blue; color:white; text-decoration:none;'>Login Wenna</a></p>");
+                    }
                 }
             }
 
