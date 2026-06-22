@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lk.techmart.core.dto.CustomerDTO;
 import lk.techmart.core.entity.Customer;
+import lk.techmart.core.entity.User;
 import lk.techmart.core.service.CustomerService;
 
 import java.util.List;
@@ -14,21 +15,6 @@ public class CustomerServiceBean implements CustomerService {
 
     @PersistenceContext(unitName = "techmartPU")
     private EntityManager em;
-
-//    public Customer createTestCustomer() {
-//        Customer c = new Customer();
-//        c.setFirstName("Kamal");
-//        c.setLastName("Perera");
-//        c.setEmail("kamal.test" + System.currentTimeMillis() + "@gmail.com");
-//        c.setPassword("12345");
-//        c.setPhone("0771234567");
-//        c.setAddress("No 10, Kandy Road, Colombo");
-//        c.setStatus("ACTIVE");
-//
-//        em.persist(c);
-//        em.flush();
-//        return c;
-//    }
 
     @Override
     public boolean registerCustomer(CustomerDTO dto) {
@@ -53,6 +39,7 @@ public class CustomerServiceBean implements CustomerService {
 
     @Override
     public CustomerDTO loginCustomer(String email, String password) {
+
         List<Customer> customers = em.createQuery("SELECT c FROM Customer c WHERE c.email = :email AND c.password = :password", Customer.class)
                 .setParameter("email", email)
                 .setParameter("password", password)
@@ -69,4 +56,5 @@ public class CustomerServiceBean implements CustomerService {
         }
         return null;
     }
+
 }

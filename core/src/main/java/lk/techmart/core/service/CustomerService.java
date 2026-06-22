@@ -8,5 +8,4 @@ public interface CustomerService {
 
     boolean registerCustomer(CustomerDTO dto);
     CustomerDTO loginCustomer(String email, String password);
-
 }
