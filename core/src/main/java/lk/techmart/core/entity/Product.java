@@ -23,11 +23,13 @@ public class Product implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "category")
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
-    @Column(name = "brand")
-    private String brand;
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;
@@ -41,8 +43,9 @@ public class Product implements Serializable {
     @Column(name = "weight")
     private BigDecimal weight;
 
-    @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
-    private String status;
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -84,19 +87,19 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
-    public String getBrand() {
+    public Brand getBrand() {
         return brand;
     }
 
-    public void setBrand(String brand) {
+    public void setBrand(Brand brand) {
         this.brand = brand;
     }
 
@@ -132,11 +135,11 @@ public class Product implements Serializable {
         this.weight = weight;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
