@@ -45,22 +45,6 @@ public class CartServlet extends HttpServlet {
         try {
             String action = request.getParameter("action");
 
-            if ("add_product".equals(action)) {
-                ProductDTO pDTO = new ProductDTO();
-                pDTO.setProductCode("PROD-" + System.currentTimeMillis());
-                pDTO.setProductName("Test Laptop DTO");
-                pDTO.setDescription("High performance gaming laptop");
-                pDTO.setCategory("Laptops");
-                pDTO.setBrand("Asus ROG");
-                pDTO.setPrice(new BigDecimal("250000.00"));
-                pDTO.setCostPrice(new BigDecimal("200000.00"));
-                pDTO.setImageUrl("images/rog_laptop.png");
-                pDTO.setWeight(new BigDecimal("2.5"));
-                pDTO.setStatus("ACTIVE");
-
-                productService.addProduct(pDTO);
-                out.println("<p style='color:green'>Product database ekata add wuna (DTO haraha)!</p>");
-            }
 
             out.println("<h3>Available Products (DB ekෙන් DTO haraha):</h3>");
 

@@ -1,6 +1,10 @@
 package lk.techmart.servlet;
 
+import com.google.gson.Gson;
 import jakarta.ejb.EJB;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.servlet.annotation.WebServlet;
@@ -9,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lk.techmart.core.dto.BrandDTO;
 import lk.techmart.core.dto.CategoryDTO;
+import lk.techmart.core.dto.ProductDTO;
 import lk.techmart.core.service.ProductService;
 
 import java.io.IOException;
@@ -24,20 +29,44 @@ public class ProductApiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String action = req.getParameter("action");
-        resp.setContentType("application/json;charset=UTF-8");
-        PrintWriter out = resp.getWriter();
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
 
-        Jsonb jsonb = JsonbBuilder.create();
+        try {
+            if ("get_categories".equals(action)) {
+                List<CategoryDTO> categories = productService.getAllCategories();
+                JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
 
-        if ("get_categories".equals(action)) {
-            List<CategoryDTO> categories = productService.getAllCategories();
-            String json = jsonb.toJson(categories);
-            out.print(json);
+                for (CategoryDTO c : categories) {
+                    arrayBuilder.add(Json.createObjectBuilder()
+                            .add("categoryId", c.getCategoryId())
+                            .add("name", c.getName()));
+                }
+                resp.getWriter().write(arrayBuilder.build().toString());
+
+            } else if ("get_brands".equals(action)) {
+                List<BrandDTO> brands = productService.getAllBrands();
+                JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+
+                for (BrandDTO b : brands) {
+                    arrayBuilder.add(Json.createObjectBuilder()
+                            .add("brandId", b.getBrandId())
+                            .add("name", b.getName()));
+                }
+                resp.getWriter().write(arrayBuilder.build().toString());
+
+            } else if ("get_all".equals(action)) {
+                List<ProductDTO> products = productService.getAllProducts();
+                Gson gson = new Gson();
+                String jsonString = gson.toJson(products);
+
+                resp.getWriter().write(jsonString);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
         }
-        else if ("get_brands".equals(action)) {
-            List<BrandDTO> brands = productService.getAllBrands();
-            String json = jsonb.toJson(brands);
-            out.print(json);
-        }
+
     }
 }

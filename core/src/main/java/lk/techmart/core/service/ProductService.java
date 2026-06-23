@@ -11,9 +11,10 @@ import java.util.List;
 public interface ProductService {
 
     void addProduct(ProductDTO productDTO);
+    void updateProduct(ProductDTO productDTO);
+    ProductDTO getProductById(Long productId);
 
     List<ProductDTO> getAllProducts();
-
     List<CategoryDTO> getAllCategories();
     List<BrandDTO> getAllBrands();
 

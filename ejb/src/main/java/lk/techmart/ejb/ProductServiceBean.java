@@ -29,11 +29,14 @@ public class ProductServiceBean implements ProductService {
         entity.setProductName(dto.getProductName());
         entity.setDescription(dto.getDescription());
 
-        Category category = findOrCreateCategory(dto.getCategory());
-        entity.setCategory(category);
-
-        Brand brand = findOrCreateBrand(dto.getBrand());
-        entity.setBrand(brand);
+        if (dto.getCategory() != null && dto.getCategory().getCategoryId() != null) {
+            Category category = em.find(Category.class, dto.getCategory().getCategoryId());
+            entity.setCategory(category);
+        }
+        if (dto.getBrand() != null && dto.getBrand().getBrandId() != null) {
+            Brand brand = em.find(Brand.class, dto.getBrand().getBrandId());
+            entity.setBrand(brand);
+        }
 
         entity.setPrice(dto.getPrice());
         entity.setCostPrice(dto.getCostPrice());
@@ -44,9 +47,54 @@ public class ProductServiceBean implements ProductService {
         Status status = findOrCreateStatus(statusName);
         entity.setStatus(status);
 
-
         em.persist(entity);
         em.flush();
+    }
+
+    @Override
+    public void updateProduct(ProductDTO dto) {
+
+        Product entity = em.find(Product.class, dto.getProductId());
+
+        if (entity != null) {
+            entity.setProductName(dto.getProductName());
+            entity.setDescription(dto.getDescription());
+            entity.setPrice(dto.getPrice());
+            entity.setCostPrice(dto.getCostPrice());
+            entity.setWeight(dto.getWeight());
+
+            if (dto.getImageUrl() != null && !dto.getImageUrl().isEmpty()) {
+                entity.setImageUrl(dto.getImageUrl());
+            }
+
+            if (dto.getCategory() != null && dto.getCategory().getCategoryId() != null) {
+                Category category = em.find(Category.class, dto.getCategory().getCategoryId());
+                entity.setCategory(category);
+            }
+            if (dto.getBrand() != null && dto.getBrand().getBrandId() != null) {
+                Brand brand = em.find(Brand.class, dto.getBrand().getBrandId());
+                entity.setBrand(brand);
+            }
+
+            String statusName = (dto.getStatus() != null) ? dto.getStatus() : "ACTIVE";
+            Status status = findOrCreateStatus(statusName);
+            entity.setStatus(status);
+
+            em.merge(entity);
+            em.flush();
+        }
+
+    }
+
+    @Override
+    public ProductDTO getProductById(Long productId) {
+        Product p = em.find(Product.class, productId);
+        if (p == null) return null;
+
+        ProductDTO dto = new ProductDTO();
+        dto.setProductId(p.getProductId());
+        dto.setProductCode(p.getProductCode());
+        return dto;
     }
 
     @Override
@@ -64,8 +112,20 @@ public class ProductServiceBean implements ProductService {
             dto.setCostPrice(p.getCostPrice());
             dto.setImageUrl(p.getImageUrl());
             dto.setWeight(p.getWeight());
-            dto.setCategory(p.getCategory() != null ? p.getCategory().getName() : "");
-            dto.setBrand(p.getBrand() != null ? p.getBrand().getName() : "");
+
+            if (p.getCategory() != null) {
+                CategoryDTO catDto = new CategoryDTO();
+                catDto.setCategoryId(p.getCategory().getCategoryId());
+                catDto.setName(p.getCategory().getName());
+                dto.setCategory(catDto);
+            }
+            if (p.getBrand() != null) {
+                BrandDTO brandDto = new BrandDTO();
+                brandDto.setBrandId(p.getBrand().getBrandId());
+                brandDto.setName(p.getBrand().getName());
+                dto.setBrand(brandDto);
+            }
+
             dto.setStatus(p.getStatus() != null ? p.getStatus().getStatusName() : "ACTIVE");
             dtos.add(dto);
         }
@@ -96,36 +156,6 @@ public class ProductServiceBean implements ProductService {
             dtos.add(dto);
         }
         return dtos;
-    }
-
-
-
-    private Category findOrCreateCategory(String name) {
-        if (name == null || name.trim().isEmpty()) return null;
-        try {
-            return em.createQuery("SELECT c FROM Category c WHERE c.name = :name", Category.class)
-                    .setParameter("name", name)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            Category newCategory = new Category();
-            newCategory.setName(name);
-            em.persist(newCategory);
-            return newCategory;
-        }
-    }
-
-    private Brand findOrCreateBrand(String name) {
-        if (name == null || name.trim().isEmpty()) return null;
-        try {
-            return em.createQuery("SELECT b FROM Brand b WHERE b.name = :name", Brand.class)
-                    .setParameter("name", name)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            Brand newBrand = new Brand();
-            newBrand.setName(name);
-            em.persist(newBrand);
-            return newBrand;
-        }
     }
 
     private Status findOrCreateStatus(String name) {

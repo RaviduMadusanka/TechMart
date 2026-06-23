@@ -1,5 +1,8 @@
 package lk.techmart.core.dto;
 
+import lk.techmart.core.entity.Brand;
+import lk.techmart.core.entity.Category;
+
 import java.math.BigDecimal;
 
 public class ProductDTO {
@@ -8,8 +11,8 @@ public class ProductDTO {
     private String productCode;
     private String productName;
     private String description;
-    private String category;
-    private String brand;
+    private CategoryDTO category;
+    private BrandDTO brand;
     private BigDecimal price;
     private BigDecimal costPrice;
     private String imageUrl;
@@ -17,26 +20,6 @@ public class ProductDTO {
     private String status;
 
     public ProductDTO() {
-    }
-
-    public ProductDTO(Long productId,
-                      String productCode,
-                      String productName,
-                      String description,
-                      String category,
-                      String brand,
-                      BigDecimal price, BigDecimal costPrice, String imageUrl, BigDecimal weight, String status) {
-        this.productId = productId;
-        this.productCode = productCode;
-        this.productName = productName;
-        this.description = description;
-        this.category = category;
-        this.brand = brand;
-        this.price = price;
-        this.costPrice = costPrice;
-        this.imageUrl = imageUrl;
-        this.weight = weight;
-        this.status = status;
     }
 
     public Long getProductId() {
@@ -71,19 +54,19 @@ public class ProductDTO {
         this.description = description;
     }
 
-    public String getCategory() {
+    public CategoryDTO getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(CategoryDTO category) {
         this.category = category;
     }
 
-    public String getBrand() {
+    public BrandDTO getBrand() {
         return brand;
     }
 
-    public void setBrand(String brand) {
+    public void setBrand(BrandDTO brand) {
         this.brand = brand;
     }
 
