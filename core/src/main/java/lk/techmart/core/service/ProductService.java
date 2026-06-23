@@ -1,6 +1,8 @@
 package lk.techmart.core.service;
 
 import jakarta.ejb.Local;
+import lk.techmart.core.dto.BrandDTO;
+import lk.techmart.core.dto.CategoryDTO;
 import lk.techmart.core.dto.ProductDTO;
 
 import java.util.List;
@@ -11,5 +13,8 @@ public interface ProductService {
     void addProduct(ProductDTO productDTO);
 
     List<ProductDTO> getAllProducts();
+
+    List<CategoryDTO> getAllCategories();
+    List<BrandDTO> getAllBrands();
 
 }

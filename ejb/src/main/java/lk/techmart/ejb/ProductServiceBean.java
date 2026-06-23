@@ -4,6 +4,8 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import lk.techmart.core.dto.BrandDTO;
+import lk.techmart.core.dto.CategoryDTO;
 import lk.techmart.core.entity.Brand;
 import lk.techmart.core.entity.Category;
 import lk.techmart.core.entity.Product;
@@ -69,6 +71,34 @@ public class ProductServiceBean implements ProductService {
         }
         return dtos;
     }
+
+    @Override
+    public List<CategoryDTO> getAllCategories() {
+        List<Category> cats = em.createQuery("SELECT c FROM Category c", Category.class).getResultList();
+        List<CategoryDTO> dtos = new ArrayList<>();
+        for(Category c : cats) {
+            CategoryDTO dto = new CategoryDTO();
+            dto.setCategoryId(c.getCategoryId());
+            dto.setName(c.getName());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @Override
+    public List<BrandDTO> getAllBrands() {
+        List<Brand> brands = em.createQuery("SELECT b FROM Brand b", Brand.class).getResultList();
+        List<BrandDTO> dtos = new ArrayList<>();
+        for(Brand b : brands) {
+            BrandDTO dto = new BrandDTO();
+            dto.setBrandId(b.getBrandId());
+            dto.setName(b.getName());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+
 
     private Category findOrCreateCategory(String name) {
         if (name == null || name.trim().isEmpty()) return null;
