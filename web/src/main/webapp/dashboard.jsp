@@ -5,136 +5,191 @@
         return;
     }
 %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechMart - Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500:'#3b5bdb',
+                            600:'#2f4cc8',
+                            700:'#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            height: 100vh;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #343a40;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-        }
-        .sidebar-header {
-            padding: 20px;
-            text-align: center;
-            background-color: #23272b;
-            font-size: 24px;
-            font-weight: bold;
-            color: #17a2b8;
-            letter-spacing: 1px;
-        }
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            flex: 1;
-        }
-        .nav-links li a {
-            display: block;
-            padding: 15px 20px;
-            color: #c2c7d0;
-            text-decoration: none;
-            font-size: 16px;
-            border-bottom: 1px solid #454d55;
-            transition: all 0.3s;
-        }
-        .nav-links li a:hover, .nav-links li a.active {
-            background-color: #17a2b8;
-            color: white;
-            padding-left: 25px;
+        body{
+            font-family: 'Inter', sans-serif;
         }
 
-
-        .main-content {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-        }
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fff;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-        }
-        .welcome-card {
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border-left: 5px solid #17a2b8;
-        }
-        .welcome-card h2 {
-            margin-top: 0;
-            color: #333;
-        }
-        .info-text {
-            font-size: 18px;
-            color: #555;
-        }
-        .action-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 25px;
-            background: #17a2b8;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        .action-btn:hover {
-            background: #138496;
+        .sidebar-link{
+            @apply flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-200;
         }
     </style>
+
 </head>
-<body>
+<body class="bg-slate-100">
 
-<div class="sidebar">
-    <div class="sidebar-header">
-        TechMart
-    </div>
-    <ul class="nav-links">
-        <li><a href="#" class="active">Dashboard</a></li>
-        <li><a href="test-cart">Products</a></li>
-        <li><a href="#">Inventory</a></li>
-        <li><a href="#">Orders</a></li>
-        <li><a href="#">Shopping Cart</a></li>
-        <li><a href="#">Notifications</a></li>
-        <li><a href="#">Performance Metrics</a></li>
-        <li style="margin-top: auto;"><a href="auth?action=logout" style="background-color: #dc3545; text-align: center;">Logout</a></li>
-    </ul>
-</div>
+<div class="flex min-h-screen">
+    <aside class="w-72 bg-gradient-to-b from-blue-900 to-blue-800 text-white shadow-2xl flex flex-col">
 
-<div class="main-content">
-    <div class="top-bar">
-        <h3 style="margin: 0; color: #333;">Dashboard Overview</h3>
-        <span style="color: #666;">Logged in as: <b><%= session.getAttribute("loggedUserName") %></b></span>
-    </div>
+        <div class="p-6 border-b border-blue-800">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl">
+                    🛒
+                </div>
 
-    <div class="welcome-card">
-        <h2>Welcome to TechMart! 🎉</h2>
-        <p class="info-text"><b>Name:</b> <%= session.getAttribute("loggedUserName") %></p>
-        <p class="info-text"><b>Email:</b> <%= session.getAttribute("loggedUserEmail") %></p>
+                <div>
+                    <h1 class="font-bold text-xl">TechMart</h1>
+                    <p class="text-blue-200 text-sm">Enterprise Platform</p>
+                </div>
+            </div>
+        </div>
 
-        <a href="test-cart" class="action-btn">Go to Store ➔</a>
-    </div>
+        <nav class="flex-1 p-4 space-y-2">
+
+            <a href="#" class="flex items-center gap-3 bg-white/15 px-5 py-3 rounded-xl">
+                📊 Dashboard
+            </a>
+
+            <a href="test-cart"
+               class="flex items-center gap-3 hover:bg-white/10 px-5 py-3 rounded-xl transition">
+                🛍 Products Management
+            </a>
+
+            <a href="#"
+               class="flex items-center gap-3 hover:bg-white/10 px-5 py-3 rounded-xl transition">
+                📦 Inventory Management
+            </a>
+
+            <a href="#"
+               class="flex items-center gap-3 hover:bg-white/10 px-5 py-3 rounded-xl transition">
+                📑 Orders Management
+            </a>
+
+            <a href="#"
+               class="flex items-center gap-3 hover:bg-white/10 px-5 py-3 rounded-xl transition">
+                📑 Users Management
+            </a>
+
+            <a href="#"
+               class="flex items-center gap-3 hover:bg-white/10 px-5 py-3 rounded-xl transition">
+                🛒 Shopping Cart
+            </a>
+
+            <a href="#"
+               class="flex items-center gap-3 hover:bg-white/10 px-5 py-3 rounded-xl transition">
+                🔔 Notifications
+            </a>
+
+            <a href="#"
+               class="flex items-center gap-3 hover:bg-white/10 px-5 py-3 rounded-xl transition">
+                📈 Performance Metrics
+            </a>
+
+        </nav>
+
+        <div class="p-4 border-t border-blue-800">
+
+            <a href="auth?action=logout"
+               class="block w-full bg-red-500 hover:bg-red-600 text-center py-3 rounded-xl font-semibold transition">
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+    <main class="flex-1 p-8">
+        <div class="bg-white rounded-2xl shadow-sm p-6 flex justify-between items-center">
+
+            <div>
+                <h2 class="text-3xl font-bold text-slate-800">
+                    Dashboard Overview
+                </h2>
+
+                <p class="text-slate-500 mt-1">
+                    Welcome back,
+                    <span class="font-semibold">
+                        <%= session.getAttribute("loggedUserName") %>
+                    </span>
+                </p>
+            </div>
+
+            <div class="bg-slate-100 px-5 py-3 rounded-xl">
+                <span class="text-slate-500 text-sm">Logged in as</span>
+                <p class="font-semibold text-slate-800">
+                    <%= session.getAttribute("loggedUserEmail") %>
+                </p>
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h4 class="text-slate-500">Total Products</h4>
+                <h2 class="text-4xl font-bold mt-3 text-brand-500">150</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h4 class="text-slate-500">Orders Today</h4>
+                <h2 class="text-4xl font-bold mt-3 text-green-500">24</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h4 class="text-slate-500">Notifications</h4>
+                <h2 class="text-4xl font-bold mt-3 text-yellow-500">12</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h4 class="text-slate-500">Customers</h4>
+                <h2 class="text-4xl font-bold mt-3 text-purple-500">3,240</h2>
+            </div>
+
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-8 mt-8 border-l-8 border-brand-500">
+
+            <h2 class="text-3xl font-bold text-slate-800">
+                Welcome to TechMart 🎉
+            </h2>
+
+            <p class="text-slate-600 mt-5 text-lg">
+                <strong>Name:</strong>
+                <%= session.getAttribute("loggedUserName") %>
+            </p>
+
+            <p class="text-slate-600 mt-2 text-lg">
+                <strong>Email:</strong>
+                <%= session.getAttribute("loggedUserEmail") %>
+            </p>
+
+            <a href="test-cart"
+               class="inline-block mt-8 bg-brand-500 hover:bg-brand-600 text-white px-8 py-3 rounded-xl font-semibold transition">
+                Go to Store →
+            </a>
+
+        </div>
+
+    </main>
+
 </div>
 
 </body>

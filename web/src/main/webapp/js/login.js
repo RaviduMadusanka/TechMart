@@ -57,7 +57,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
                 `;
 
                 setTimeout(() => {
-                    window.location.href = "test-cart";
+                    window.location.href = "home.jsp";
                 }, 1000);
             }
         })

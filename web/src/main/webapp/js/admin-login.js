@@ -58,7 +58,7 @@ document.getElementById('adminLoginForm').addEventListener('submit', function(ev
                     `;
 
                 setTimeout(() => {
-                    window.location.href = "admin-auth";
+                    window.location.href = "dashboard.jsp";
                 }, 1000);
             }
         })
