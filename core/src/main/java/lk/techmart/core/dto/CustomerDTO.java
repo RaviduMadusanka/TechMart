@@ -9,6 +9,8 @@ public class CustomerDTO {
     private String password;
     private String phone;
     private String address;
+    private String joinedDate;
+    private String status;
 
 
     public Long getCustomerId() {
@@ -65,5 +67,21 @@ public class CustomerDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getJoinedDate() {
+        return joinedDate;
+    }
+
+    public void setJoinedDate(String joinedDate) {
+        this.joinedDate = joinedDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

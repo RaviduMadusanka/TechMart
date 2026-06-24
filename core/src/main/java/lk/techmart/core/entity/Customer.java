@@ -28,8 +28,9 @@ public class Customer implements Serializable {
     private String phone;
     private String address;
 
-    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
-    private String status;
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private CustomerStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -91,11 +92,11 @@ public class Customer implements Serializable {
         this.address = address;
     }
 
-    public String getStatus() {
+    public CustomerStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(CustomerStatus status) {
         this.status = status;
     }
 

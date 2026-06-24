@@ -20,12 +20,16 @@ public class Orders {
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
-    @Column(name = "order_status", columnDefinition = "VARCHAR(50) DEFAULT 'PENDING'")
-    private String orderStatus;
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private OrderStatus orderStatus;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "order_date", insertable = false, updatable = false)
     private Date orderDate;
+
+    @Column(name = "shipping_address", nullable = false)
+    private String shipping_address;
 
     public Long getOrderId() {
         return orderId;
@@ -51,11 +55,11 @@ public class Orders {
         this.totalAmount = totalAmount;
     }
 
-    public String getOrderStatus() {
+    public OrderStatus getOrderStatus() {
         return orderStatus;
     }
 
-    public void setOrderStatus(String orderStatus) {
+    public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
 
@@ -65,5 +69,13 @@ public class Orders {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getShipping_address() {
+        return shipping_address;
+    }
+
+    public void setShipping_address(String shipping_address) {
+        this.shipping_address = shipping_address;
     }
 }
