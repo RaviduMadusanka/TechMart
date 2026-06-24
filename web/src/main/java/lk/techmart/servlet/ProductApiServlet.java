@@ -97,6 +97,23 @@ public class ProductApiServlet extends HttpServlet {
                     resp.setStatus(HttpServletResponse.SC_CONFLICT);
                     resp.getWriter().write("{\"success\": false, \"message\": \"Category already exists!\"}");
                 }
+            }else if ("add_brand".equals(action)) {
+                String name = req.getParameter("name");
+
+                if (name == null || name.trim().isEmpty()) {
+                    resp.getWriter().write("{\"success\": false, \"message\": \"Brand name cannot be empty!\"}");
+                    return;
+                }
+
+                BrandDTO dto = new BrandDTO();
+                dto.setName(name);
+                boolean success = productService.addBrand(dto);
+
+                if (success) {
+                    resp.getWriter().write("{\"success\": true, \"message\": \"Brand added successfully!\"}");
+                } else {
+                    resp.getWriter().write("{\"success\": false, \"message\": \"Brand already exists!\"}");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -19,5 +19,6 @@ public interface ProductService {
     List<BrandDTO> getAllBrands();
 
     boolean addCategory(CategoryDTO categoryDTO);
+    boolean addBrand(BrandDTO brandDTO);
 
 }

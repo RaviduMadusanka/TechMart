@@ -180,6 +180,26 @@ public class ProductServiceBean implements ProductService {
         }
     }
 
+    @Override
+    public boolean addBrand(BrandDTO brandDTO) {
+        if (brandDTO.getName() == null || brandDTO.getName().trim().isEmpty()) return false;
+        try {
+            Long count = em.createQuery("SELECT COUNT(b) FROM Brand b WHERE LOWER(b.name) = LOWER(:name)", Long.class)
+                    .setParameter("name", brandDTO.getName().trim())
+                    .getSingleResult();
+
+            if (count > 0) return false;
+
+            Brand newBrand = new Brand();
+            newBrand.setName(brandDTO.getName().trim());
+            em.persist(newBrand);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private Status findOrCreateStatus(String name) {
         try {
             return em.createQuery("SELECT s FROM Status s WHERE s.statusName = :name", Status.class)
