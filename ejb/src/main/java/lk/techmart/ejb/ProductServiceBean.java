@@ -158,6 +158,28 @@ public class ProductServiceBean implements ProductService {
         return dtos;
     }
 
+    @Override
+    public boolean addCategory(CategoryDTO dto) {
+        try {
+            List<Category> existing = em.createQuery("SELECT c FROM Category c WHERE LOWER(c.name) = LOWER(:name)", Category.class)
+                    .setParameter("name", dto.getName().trim())
+                    .getResultList();
+
+            if (!existing.isEmpty()) {
+                return false;
+            }
+
+            Category category = new Category();
+            category.setName(dto.getName().trim());
+            em.persist(category);
+            em.flush();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private Status findOrCreateStatus(String name) {
         try {
             return em.createQuery("SELECT s FROM Status s WHERE s.statusName = :name", Status.class)

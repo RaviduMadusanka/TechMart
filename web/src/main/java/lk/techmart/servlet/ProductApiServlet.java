@@ -69,4 +69,39 @@ public class ProductApiServlet extends HttpServlet {
         }
 
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String action = req.getParameter("action");
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        try {
+            if ("add_category".equals(action)) {
+                String name = req.getParameter("name");
+
+                if (name == null || name.trim().isEmpty()) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("{\"success\": false, \"message\": \"Category name cannot be empty.\"}");
+                    return;
+                }
+
+                CategoryDTO dto = new CategoryDTO();
+                dto.setName(name);
+
+                boolean success = productService.addCategory(dto);
+
+                if (success) {
+                    resp.getWriter().write("{\"success\": true, \"message\": \"Category added successfully!\"}");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                    resp.getWriter().write("{\"success\": false, \"message\": \"Category already exists!\"}");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"success\": false, \"message\": \"Server error occurred.\"}");
+        }
+    }
 }

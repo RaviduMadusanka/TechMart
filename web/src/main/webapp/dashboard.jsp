@@ -37,7 +37,8 @@
         <nav class="flex-1 p-4 space-y-2">
             <a href="?view=overview" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "overview".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📊 Dashboard Overview</a>
             <a href="?view=products" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "products".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">🛍 Products Management</a>
-            <a href="?view=categories" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "categories".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Categories</a>
+            <a href="?view=categories" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "categories".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Category Managment</a>
+            <a href="?view=brand" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "brand".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Brand Managment</a>
             <a href="?view=inventory" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "inventory".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📦 Inventory Management</a>
             <a href="?view=orders" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "orders".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📑 Orders Management</a>
             <a href="?view=users" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "users".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">👥 Users Management</a>
@@ -60,11 +61,12 @@
             </div>
         </div>
 
-        <!-- ඩයිනමික් පිටු ලෝඩ් වෙන ස්ථානය (Dynamic Include Area) -->
         <% if ("products".equals(view)) { %>
         <jsp:include page="views/products-content.jsp" />
         <% } else if ("categories".equals(view)) { %>
         <jsp:include page="views/categories-content.jsp" />
+        <% } else if ("brand".equals(view)) { %>
+        <jsp:include page="views/brands-content.jsp" />
         <% } else if ("orders".equals(view)) { %>
         <jsp:include page="views/orders-content.jsp" />
         <% } else if ("inventory".equals(view)) { %>

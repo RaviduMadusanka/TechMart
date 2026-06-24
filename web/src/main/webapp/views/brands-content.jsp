@@ -1,0 +1,90 @@
+<div class="flex flex-col xl:flex-row gap-6">
+
+    <!-- වම් පැත්ත: Brands Table එක -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex-1">
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <div>
+                <h3 class="text-xl font-bold text-slate-800">Product Brands</h3>
+                <p class="text-sm text-slate-500 mt-1">Manage partner brands and manufacturers.</p>
+            </div>
+
+            <div class="relative w-full sm:w-72">
+                <input type="text" placeholder="Search brands..."
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/20 transition-all">
+                <span class="absolute left-3.5 top-3 text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </span>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left border-collapse whitespace-nowrap">
+                <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                    <th class="py-3.5 px-5 font-semibold border-b border-slate-200">Brand Name</th>
+                    <th class="py-3.5 px-5 font-semibold border-b border-slate-200">Status</th>
+                    <th class="py-3.5 px-5 font-semibold border-b border-slate-200 text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="text-sm divide-y divide-slate-100" id="brandTableBody">
+                <tr>
+                    <td colspan="3" class="text-center py-10">
+                        <div class="animate-spin w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full mx-auto"></div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex items-center justify-between mt-4 text-sm text-slate-500">
+            <p id="brandCount">Showing 0 brands</p>
+        </div>
+
+    </div>
+
+    <!-- දකුණු පැත්ත: අලුතින් Brand එකක් Add කරන Form එක -->
+    <div class="w-full xl:w-[350px]">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 sticky top-6">
+
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div class="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-md">
+                    <!-- Star Icon for Brands -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">New Brand</h3>
+                    <p class="text-xs text-slate-500">Add to partner list</p>
+                </div>
+            </div>
+
+            <form id="addBrandForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Brand Name *</label>
+                    <input type="text" id="brandName" name="name" required placeholder="e.g. Samsung"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/20 transition-all font-medium text-slate-800">
+                </div>
+
+                <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-xl transition-all shadow-md shadow-brand-500/30 flex items-center justify-center gap-2 active:scale-[0.98]">
+                    <span>Save Brand</span>
+                </button>
+            </form>
+
+            <div class="mt-6 pt-5 border-t border-slate-100">
+                <div class="bg-orange-50 text-orange-700 p-3 rounded-xl text-xs flex items-start gap-2">
+                    <svg class="w-4 h-4 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <span>Brands added here will be available when adding new products.</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    if (typeof CONTEXT_PATH === 'undefined') {
+        var CONTEXT_PATH = '${pageContext.request.contextPath}';
+    }
+</script>
+<script src="${pageContext.request.contextPath}/js/brands.js"></script>
