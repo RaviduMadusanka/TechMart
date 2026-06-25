@@ -7,6 +7,7 @@ import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
 import lk.techmart.core.service.InventoryService;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InventoryServiceBean implements InventoryService {
 
     private Map<Long, Integer> stockMap;
+    private Map<Long, Integer> stockMemory = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -53,4 +55,14 @@ public class InventoryServiceBean implements InventoryService {
     public int getAvailableStock(Long productId) {
         return stockMap.getOrDefault(productId, 0);
     }
+
+    @Override
+    public int getLowStockCount(int threshold) {
+        int count = 0;
+        for (Integer qty : stockMemory.values()) {
+            if (qty < threshold) count++;
+        }
+        return count;
+    }
+
 }

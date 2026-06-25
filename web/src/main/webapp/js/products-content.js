@@ -8,8 +8,11 @@ if(saveProductBtn) {
     originalBtnContent = saveProductBtn.innerHTML;
 }
 
-function loadDropdowns(selectedCategoryId = '', selectedBrandId = '') {
+let allProductsList = [];
+let currentPage = 1;
+const itemsPerPage = 5;
 
+function loadDropdowns(selectedCategoryId = '', selectedBrandId = '') {
     fetch(CONTEXT_PATH + '/api/products?action=get_categories')
         .then(response => response.json())
         .then(data => {
@@ -61,93 +64,9 @@ function loadProducts() {
     fetch(CONTEXT_PATH + '/api/products?action=get_all')
         .then(response => response.json())
         .then(data => {
-            tableBody.innerHTML = '';
-
-            if(data.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center py-10 text-slate-500 font-medium">
-                            No products found. Click "Add New Product" to create one.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            data.forEach(product => {
-                const catName = product.category ? product.category.name : '-';
-                const catId = product.category ? product.category.categoryId : '';
-                const brandName = product.brand ? product.brand.name : '-';
-                const brandId = product.brand ? product.brand.brandId : '';
-
-                const sellPrice = product.price ? parseFloat(product.price).toLocaleString('en-US', {minimumFractionDigits: 2}) : '0.00';
-                const costPrice = product.costPrice ? parseFloat(product.costPrice).toLocaleString('en-US', {minimumFractionDigits: 2}) : '0.00';
-                const weight = product.weight ? parseFloat(product.weight).toFixed(2) : '-';
-
-                let statusHtml = '';
-                let statusIdVal = "1";
-                if(product.status === 'ACTIVE') {
-                    statusHtml = `<span class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-semibold border border-green-200"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Active</span>`;
-                    statusIdVal = "1";
-                } else if(product.status === 'INACTIVE') {
-                    statusHtml = `<span class="inline-flex items-center gap-1.5 bg-red-50 text-red-700 px-3 py-1 rounded-full text-xs font-semibold border border-red-200"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Inactive</span>`;
-                    statusIdVal = "2";
-                } else {
-                    statusHtml = `<span class="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold border border-yellow-200"><span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Out of Stock</span>`;
-                    statusIdVal = "3";
-                }
-
-                const safeDesc = product.description ? product.description.replace(/'/g, "\\'").replace(/\n/g, "\\n") : '';
-                const safeName = product.productName ? product.productName.replace(/'/g, "\\'") : '';
-
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-slate-50/80 transition-colors group';
-
-                row.innerHTML = `
-                    <td class="py-4 px-5">
-                        <div class="flex items-center gap-3">
-                            ${product.imageUrl
-                    ? `<img src="${CONTEXT_PATH}/image?file=${product.imageUrl}" class="w-10 h-10 rounded-lg object-cover border border-slate-200">`
-                    : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>`
-                }
-                            <div>
-                                <p class="font-bold text-slate-800 text-sm">${product.productName}</p>
-                                <p class="text-slate-400 text-xs mt-0.5 font-mono">${product.productCode}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="py-4 px-5">
-                        <p class="text-slate-600 truncate max-w-[150px]" title="${product.description}">${product.description || '-'}</p>
-                    </td>
-                    <td class="py-4 px-5">
-                        <div class="flex flex-col gap-1">
-                            <span class="text-slate-800 font-bold">${sellPrice} <span class="text-[10px] text-slate-400 font-normal uppercase">(Sell)</span></span>
-                            <span class="text-slate-500 text-xs">${costPrice} <span class="text-[10px] text-slate-400 uppercase">(Cost)</span></span>
-                        </div>
-                    </td>
-                    <td class="py-4 px-5">
-                        <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-xs font-medium border border-slate-200">${weight} kg</span>
-                    </td>
-                    <td class="py-4 px-5">
-                        <div class="flex flex-col gap-1 text-xs">
-                            <span class="text-brand-600 font-medium"><span class="text-slate-400 font-normal">Cat:</span> ${catName}</span>
-                            <span class="text-brand-600 font-medium"><span class="text-slate-400 font-normal">Br:</span> ${brandName}</span>
-                        </div>
-                    </td>
-                    <td class="py-4 px-5">
-                            ${statusHtml}
-                    </td>
-                    <td class="py-4 px-5 text-right">
-                        <button onclick="openUpdateProductModal(${product.productId}, '${safeName}', '${safeDesc}', ${product.price}, ${product.costPrice || 0}, ${product.weight || 0}, '${catId}', '${brandId}', '${statusIdVal}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        </button>
-                        <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
+            allProductsList = data;
+            currentPage = 1;
+            renderProductsTable();
         })
         .catch(err => {
             console.error("Error loading products:", err);
@@ -159,6 +78,157 @@ function loadProducts() {
                 </tr>
             `;
         });
+}
+
+function renderProductsTable() {
+    const tableBody = document.getElementById('productsTableBody');
+    tableBody.innerHTML = '';
+
+    if(allProductsList.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-10 text-slate-500 font-medium">
+                    No products found. Click "Add New Product" to create one.
+                </td>
+            </tr>
+        `;
+        updatePaginationUI(0, 0, 0);
+        return;
+    }
+
+    const totalItems = allProductsList.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if(currentPage > totalPages) currentPage = totalPages;
+    if(currentPage < 1) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+    const currentItems = allProductsList.slice(startIndex, endIndex);
+
+    currentItems.forEach(product => {
+        const catName = product.category ? product.category.name : '-';
+        const catId = product.category ? product.category.categoryId : '';
+        const brandName = product.brand ? product.brand.name : '-';
+        const brandId = product.brand ? product.brand.brandId : '';
+
+        const sellPrice = product.price ? parseFloat(product.price).toLocaleString('en-US', {minimumFractionDigits: 2}) : '0.00';
+        const costPrice = product.costPrice ? parseFloat(product.costPrice).toLocaleString('en-US', {minimumFractionDigits: 2}) : '0.00';
+        const weight = product.weight ? parseFloat(product.weight).toFixed(2) : '-';
+
+        let statusHtml = '';
+        let statusIdVal = "1";
+        if(product.status === 'ACTIVE') {
+            statusHtml = `<span class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-semibold border border-green-200"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Active</span>`;
+            statusIdVal = "1";
+        } else if(product.status === 'INACTIVE') {
+            statusHtml = `<span class="inline-flex items-center gap-1.5 bg-red-50 text-red-700 px-3 py-1 rounded-full text-xs font-semibold border border-red-200"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Inactive</span>`;
+            statusIdVal = "2";
+        } else {
+            statusHtml = `<span class="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold border border-yellow-200"><span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Out of Stock</span>`;
+            statusIdVal = "3";
+        }
+
+        const safeDesc = product.description ? product.description.replace(/'/g, "\\'").replace(/\n/g, "\\n") : '';
+        const safeName = product.productName ? product.productName.replace(/'/g, "\\'") : '';
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50/80 transition-colors group';
+
+        row.innerHTML = `
+            <td class="py-4 px-5">
+                <div class="flex items-center gap-3">
+                    ${product.imageUrl
+            ? `<img src="${CONTEXT_PATH}/image?file=${product.imageUrl}" class="w-10 h-10 rounded-lg object-cover border border-slate-200">`
+            : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>`
+        }
+                    <div>
+                        <p class="font-bold text-slate-800 text-sm">${product.productName}</p>
+                        <p class="text-slate-400 text-xs mt-0.5 font-mono">${product.productCode}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="py-4 px-5">
+                <p class="text-slate-600 truncate max-w-[150px]" title="${product.description}">${product.description || '-'}</p>
+            </td>
+            <td class="py-4 px-5">
+                <div class="flex flex-col gap-1">
+                    <span class="text-slate-800 font-bold">${sellPrice} <span class="text-[10px] text-slate-400 font-normal uppercase">(Sell)</span></span>
+                    <span class="text-slate-500 text-xs">${costPrice} <span class="text-[10px] text-slate-400 uppercase">(Cost)</span></span>
+                </div>
+            </td>
+            <td class="py-4 px-5">
+                <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-xs font-medium border border-slate-200">${weight} kg</span>
+            </td>
+            <td class="py-4 px-5">
+                <div class="flex flex-col gap-1 text-xs">
+                    <span class="text-brand-600 font-medium"><span class="text-slate-400 font-normal">Cat:</span> ${catName}</span>
+                    <span class="text-brand-600 font-medium"><span class="text-slate-400 font-normal">Br:</span> ${brandName}</span>
+                </div>
+            </td>
+            <td class="py-4 px-5">
+                    ${statusHtml}
+            </td>
+            <td class="py-4 px-5 text-right">
+                <button onclick="openUpdateProductModal(${product.productId}, '${safeName}', '${safeDesc}', ${product.price}, ${product.costPrice || 0}, ${product.weight || 0}, '${catId}', '${brandId}', '${statusIdVal}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </button>
+                <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    updatePaginationUI(startIndex + 1, endIndex, totalItems);
+}
+
+function updatePaginationUI(start, end, total) {
+    document.getElementById('pageStart').innerText = total === 0 ? 0 : start;
+    document.getElementById('pageEnd').innerText = total === 0 ? 0 : end;
+    document.getElementById('pageTotal').innerText = total;
+    document.getElementById('btnCurrentPage').innerText = currentPage;
+
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    if (currentPage <= 1) {
+        btnPrev.disabled = true;
+        btnPrev.classList.add('cursor-not-allowed', 'text-slate-400', 'opacity-50');
+        btnPrev.classList.remove('hover:bg-slate-50', 'text-slate-700');
+    } else {
+        btnPrev.disabled = false;
+        btnPrev.classList.remove('cursor-not-allowed', 'text-slate-400', 'opacity-50');
+        btnPrev.classList.add('hover:bg-slate-50', 'text-slate-700', 'cursor-pointer');
+    }
+
+    if (currentPage >= totalPages || total === 0) {
+        btnNext.disabled = true;
+        btnNext.classList.add('cursor-not-allowed', 'text-slate-400', 'opacity-50');
+        btnNext.classList.remove('hover:bg-slate-50', 'text-slate-700');
+    } else {
+        btnNext.disabled = false;
+        btnNext.classList.remove('cursor-not-allowed', 'text-slate-400', 'opacity-50');
+        btnNext.classList.add('hover:bg-slate-50', 'text-slate-700', 'cursor-pointer');
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderProductsTable();
+    }
+}
+
+function nextPage() {
+    const totalPages = Math.ceil(allProductsList.length / itemsPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderProductsTable();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadProducts);
@@ -260,7 +330,7 @@ if(addProductForm) {
                 if(response.ok) {
                     return response.text();
                 } else {
-                    throw new Error("Failed to save product. Server returned an error.");
+                    throw new Error("Failed to save product.");
                 }
             })
             .then(message => {
@@ -273,7 +343,7 @@ if(addProductForm) {
 
                 setTimeout(() => {
                     closeAddProductModal();
-                    window.location.reload();
+                    loadProducts(); // අලුත් Product එකක් දැම්මට පස්සෙත් ඔටෝම Refresh වෙනවා!
                 }, 1500);
 
             })

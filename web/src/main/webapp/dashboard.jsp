@@ -37,8 +37,7 @@
         <nav class="flex-1 p-4 space-y-2">
             <a href="?view=overview" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "overview".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📊 Dashboard Overview</a>
             <a href="?view=products" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "products".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">🛍 Products Management</a>
-            <a href="?view=categories" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "categories".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Category Managment</a>
-            <a href="?view=brand" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "brand".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Brand Managment</a>
+            <a href="?view=categories" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "categories".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Categories</a>
             <a href="?view=inventory" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "inventory".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📦 Inventory Management</a>
             <a href="?view=orders" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "orders".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📑 Orders Management</a>
             <a href="?view=users" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "users".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">👥 Users Management</a>
@@ -65,8 +64,6 @@
         <jsp:include page="views/products-content.jsp" />
         <% } else if ("categories".equals(view)) { %>
         <jsp:include page="views/categories-content.jsp" />
-        <% } else if ("brand".equals(view)) { %>
-        <jsp:include page="views/brands-content.jsp" />
         <% } else if ("orders".equals(view)) { %>
         <jsp:include page="views/orders-content.jsp" />
         <% } else if ("inventory".equals(view)) { %>
@@ -76,16 +73,44 @@
         <% } else { %>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-brand-500"><h4 class="text-slate-500">Total Products</h4><h2 class="text-4xl font-bold mt-3 text-slate-800">1,250</h2></div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-green-500"><h4 class="text-slate-500">Orders Today</h4><h2 class="text-4xl font-bold mt-3 text-slate-800">124</h2></div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-yellow-500"><h4 class="text-slate-500">Low Stock Items</h4><h2 class="text-4xl font-bold mt-3 text-slate-800">12</h2></div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-purple-500"><h4 class="text-slate-500">Total Customers</h4><h2 class="text-4xl font-bold mt-3 text-slate-800">3,240</h2></div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-brand-500">
+                <h4 class="text-slate-500">Total Products</h4>
+                <h2 id="stat-products" class="text-4xl font-bold mt-3 text-slate-800">...</h2>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-green-500">
+                <h4 class="text-slate-500">Orders Today</h4>
+                <h2 id="stat-orders" class="text-4xl font-bold mt-3 text-slate-800">...</h2>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-yellow-500">
+                <h4 class="text-slate-500">Low Stock Items</h4>
+                <h2 id="stat-stock" class="text-4xl font-bold mt-3 text-slate-800">...</h2>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-purple-500">
+                <h4 class="text-slate-500">Total Customers</h4>
+                <h2 id="stat-customers" class="text-4xl font-bold mt-3 text-slate-800">...</h2>
+            </div>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm p-8 mt-8 border-l-8 border-brand-500">
             <h2 class="text-3xl font-bold text-slate-800">Welcome to TechMart Admin 🎉</h2>
             <p class="text-slate-600 mt-2 text-lg">Use the sidebar to manage your enterprise e-commerce platform.</p>
         </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                fetch('<%= request.getContextPath() %>/api/dashboard')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.error) {
+                            document.getElementById('stat-products').innerText = data.totalProducts.toLocaleString();
+                            document.getElementById('stat-orders').innerText = data.ordersToday.toLocaleString();
+                            document.getElementById('stat-stock').innerText = data.lowStockItems.toLocaleString();
+                            document.getElementById('stat-customers').innerText = data.totalCustomers.toLocaleString();
+                        }
+                    })
+                    .catch(err => console.error("Error loading dashboard stats:", err));
+            });
+        </script>
         <% } %>
     </main>
 </div>

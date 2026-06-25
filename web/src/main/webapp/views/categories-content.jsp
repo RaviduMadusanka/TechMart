@@ -27,61 +27,24 @@
                 </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100" id="categoryTableBody">
-
-                <tr class="hover:bg-slate-50/80 transition-colors group">
-                    <td class="py-3 px-5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xs border border-brand-100">
-                                LP
-                            </div>
-                            <span class="font-semibold text-slate-800">Laptops</span>
-                        </div>
-                    </td>
-                    <td class="py-3 px-5">
-                            <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-1 rounded-md text-xs font-medium border border-green-200">
-                                Active
-                            </span>
-                    </td>
-                    <td class="py-3 px-5 text-right">
-                        <button class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors mx-0.5" title="Edit">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        </button>
-                        <button class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors mx-0.5" title="Delete">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
+                <tr>
+                    <td colspan="3" class="text-center py-10">
+                        <div class="animate-spin w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full mx-auto"></div>
+                        <p class="text-slate-500 mt-2 text-sm font-medium">Loading categories...</p>
                     </td>
                 </tr>
-
-                <tr class="hover:bg-slate-50/80 transition-colors group">
-                    <td class="py-3 px-5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs border border-indigo-100">
-                                SP
-                            </div>
-                            <span class="font-semibold text-slate-800">Smartphones</span>
-                        </div>
-                    </td>
-                    <td class="py-3 px-5">
-                            <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-1 rounded-md text-xs font-medium border border-green-200">
-                                Active
-                            </span>
-                    </td>
-                    <td class="py-3 px-5 text-right">
-                        <button class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors mx-0.5" title="Edit">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        </button>
-                        <button class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors mx-0.5" title="Delete">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </td>
-                </tr>
-
                 </tbody>
             </table>
         </div>
 
-        <div class="flex items-center justify-between mt-4 text-sm text-slate-500">
-            <p id="categoryCount">Showing 2 categories</p>
+        <!-- අලුතින් එකතු කළ Pagination කොටස -->
+        <div class="flex items-center justify-between mt-6">
+            <p class="text-sm text-slate-500">Showing <span id="pageStart" class="font-medium text-slate-700">0</span> to <span id="pageEnd" class="font-medium text-slate-700">0</span> of <span id="pageTotal" class="font-medium text-slate-700">0</span> categories</p>
+            <div class="flex gap-2">
+                <button id="btnPrev" onclick="prevPage()" disabled class="px-3 py-1.5 border border-slate-200 text-slate-400 rounded-lg text-sm font-medium cursor-not-allowed transition-colors">Previous</button>
+                <button id="btnCurrentPage" class="px-3 py-1.5 bg-brand-50 text-brand-600 rounded-lg text-sm font-medium">1</button>
+                <button id="btnNext" onclick="nextPage()" disabled class="px-3 py-1.5 border border-slate-200 text-slate-400 rounded-lg text-sm font-medium cursor-not-allowed transition-colors">Next</button>
+            </div>
         </div>
 
     </div>
