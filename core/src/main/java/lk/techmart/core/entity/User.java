@@ -13,18 +13,28 @@ public class User implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, name = "username")
     private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String role;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", insertable = false, updatable = false)
     private Date createdAt;
+
+    @Column(unique = true,nullable = false,name = "email")
+    private String email;
+
+    @ManyToOne
+    @JoinColumn(name = "user_type_id")
+    private UserType userType;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private CustomerStatus status;
+
+
 
     public Long getUserId() {
         return userId;
@@ -50,19 +60,35 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
+
+    public CustomerStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CustomerStatus status) {
+        this.status = status;
     }
 }

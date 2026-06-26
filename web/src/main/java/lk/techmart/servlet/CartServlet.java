@@ -57,7 +57,6 @@ public class CartServlet extends HttpServlet {
                 out.println("<a href='?action=add_to_cart&pid=" + p.getProductId() + "'>[ Cart ekata Danna ]</a><br>");
             }
 
-            // 3. Cart එකට Add කිරීම
             if ("add_to_cart".equals(action)) {
                 Long pid = Long.parseLong(request.getParameter("pid"));
                 shoppingCart.addItem(pid, 1);
@@ -78,13 +77,13 @@ public class CartServlet extends HttpServlet {
                         try {
                             Long orderId = orderService.placeOrder(realCustomerId, cart);
                             shoppingCart.clearCart();
-                            out.println("<h3 style='color:green; background:#e8f5e9; padding:10px;'>Order eka sarthakai! 🎉 Order ID: " + orderId + "</h3>");
+                            out.println("<h3 style='color:green; background:#e8f5e9; padding:10px;'>Order Succesfully, Order ID: " + orderId + "</h3>");
                         } catch (Exception e) {
                             out.println("<p style='color:red'>Error placing order: " + e.getMessage() + "</p>");
                         }
 
                     } else {
-                        out.println("<p style='color:red'>Checkout karanna kalin karunakara Login wenna! <br><br> <a href='auth?action=login' style='padding:5px 10px; background:blue; color:white; text-decoration:none;'>Login Wenna</a></p>");
+                        out.println("<p style='color:red'>Please Loging First! <br><br> <a href='auth?action=login' style='padding:5px 10px; background:blue; color:white; text-decoration:none;'>Login</a></p>");
                     }
                 }
             }

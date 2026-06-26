@@ -1,3 +1,11 @@
+if (typeof CONTEXT_PATH === 'undefined') {
+    var CONTEXT_PATH = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+}
+
+let allBrandsList = [];
+let currentPage = 1;
+const itemsPerPage = 5;
+
 function loadBrands() {
     const tableBody = document.getElementById('brandTableBody');
     if (!tableBody) return;
@@ -14,56 +22,9 @@ function loadBrands() {
     fetch(CONTEXT_PATH + '/api/products?action=get_brands')
         .then(response => response.json())
         .then(data => {
-            tableBody.innerHTML = '';
-
-            if (data.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="3" class="text-center py-8 text-slate-500 text-sm">
-                            No brands found. Add a new brand from the right panel.
-                        </td>
-                    </tr>
-                `;
-                document.getElementById('brandCount').innerText = "Showing 0 brands";
-                return;
-            }
-
-            data.forEach(brand => {
-                const initials = brand.name.substring(0, 2).toUpperCase();
-
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-slate-50/80 transition-colors group';
-
-                row.innerHTML = `
-                    <td class="py-3 px-5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center font-bold text-xs border border-orange-100 uppercase">
-                                ${initials}
-                            </div>
-                            <span class="font-semibold text-slate-800">${brand.name}</span>
-                        </div>
-                    </td>
-                    <td class="py-3 px-5">
-                        <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-1 rounded-md text-xs font-medium border border-green-200">
-                            Active
-                        </span>
-                    </td>
-                    <td class="py-3 px-5 text-right">
-                        <button class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors mx-0.5" title="Edit">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        </button>
-                        <button class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors mx-0.5" title="Delete">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-
-            const countElement = document.getElementById('brandCount');
-            if(countElement) {
-                countElement.innerText = `Showing ${data.length} brands`;
-            }
+            allBrandsList = data;
+            currentPage = 1;
+            renderBrandTable();
         })
         .catch(error => {
             console.error("Error loading brands:", error);
@@ -75,6 +36,113 @@ function loadBrands() {
                 </tr>
             `;
         });
+}
+
+function renderBrandTable() {
+    const tableBody = document.getElementById('brandTableBody');
+    tableBody.innerHTML = '';
+
+    if (allBrandsList.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="3" class="text-center py-8 text-slate-500 text-sm">
+                    No brands found. Add a new brand from the right panel.
+                </td>
+            </tr>
+        `;
+        updatePaginationUI(0, 0, 0);
+        return;
+    }
+
+    const totalItems = allBrandsList.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+    const currentItems = allBrandsList.slice(startIndex, endIndex);
+
+    currentItems.forEach(brand => {
+        const initials = brand.name.substring(0, 2).toUpperCase();
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50/80 transition-colors group';
+        row.innerHTML = `
+            <td class="py-3 px-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center font-bold text-xs border border-orange-100 uppercase">
+                        ${initials}
+                    </div>
+                    <span class="font-semibold text-slate-800">${brand.name}</span>
+                </div>
+            </td>
+            <td class="py-3 px-5">
+                <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-1 rounded-md text-xs font-medium border border-green-200">
+                    Active
+                </span>
+            </td>
+            <td class="py-3 px-5 text-right">
+                <button class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors mx-0.5" title="Edit">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </button>
+                <button class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors mx-0.5" title="Delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    updatePaginationUI(startIndex + 1, endIndex, totalItems);
+}
+
+function updatePaginationUI(start, end, total) {
+    document.getElementById('pageStart').innerText = total === 0 ? 0 : start;
+    document.getElementById('pageEnd').innerText = total === 0 ? 0 : end;
+    document.getElementById('pageTotal').innerText = total;
+    document.getElementById('btnCurrentPage').innerText = currentPage;
+
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    if (currentPage <= 1) {
+        btnPrev.disabled = true;
+        btnPrev.classList.add('cursor-not-allowed', 'text-slate-400', 'opacity-50');
+        btnPrev.classList.remove('hover:bg-slate-50', 'text-slate-700');
+    } else {
+        btnPrev.disabled = false;
+        btnPrev.classList.remove('cursor-not-allowed', 'text-slate-400', 'opacity-50');
+        btnPrev.classList.add('hover:bg-slate-50', 'text-slate-700', 'cursor-pointer');
+    }
+
+    if (currentPage >= totalPages || total === 0) {
+        btnNext.disabled = true;
+        btnNext.classList.add('cursor-not-allowed', 'text-slate-400', 'opacity-50');
+        btnNext.classList.remove('hover:bg-slate-50', 'text-slate-700');
+    } else {
+        btnNext.disabled = false;
+        btnNext.classList.remove('cursor-not-allowed', 'text-slate-400', 'opacity-50');
+        btnNext.classList.add('hover:bg-slate-50', 'text-slate-700', 'cursor-pointer');
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderBrandTable();
+    }
+}
+
+function nextPage() {
+    const totalPages = Math.ceil(allBrandsList.length / itemsPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderBrandTable();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadBrands);

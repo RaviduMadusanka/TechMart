@@ -343,7 +343,7 @@ if(addProductForm) {
 
                 setTimeout(() => {
                     closeAddProductModal();
-                    loadProducts(); // අලුත් Product එකක් දැම්මට පස්සෙත් ඔටෝම Refresh වෙනවා!
+                    loadProducts();
                 }, 1500);
 
             })

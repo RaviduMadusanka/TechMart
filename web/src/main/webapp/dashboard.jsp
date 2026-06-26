@@ -1,3 +1,4 @@
+<%@ page session="true" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     if (session.getAttribute("loggedUserEmail") == null) {
@@ -6,6 +7,11 @@
     }
     String view = request.getParameter("view");
     if (view == null || view.trim().isEmpty()) { view = "overview"; }
+
+%>
+<%
+    System.out.println("SESSION NAME  : " + session.getAttribute("loggedUserName"));
+    System.out.println("SESSION EMAIL : " + session.getAttribute("loggedUserEmail"));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +43,8 @@
         <nav class="flex-1 p-4 space-y-2">
             <a href="?view=overview" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "overview".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📊 Dashboard Overview</a>
             <a href="?view=products" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "products".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">🛍 Products Management</a>
-            <a href="?view=categories" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "categories".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Categories</a>
+            <a href="?view=categories" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "categories".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Categories Management</a>
+            <a href="?view=brands" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "brands".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Brand Management</a>
             <a href="?view=inventory" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "inventory".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📦 Inventory Management</a>
             <a href="?view=orders" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "orders".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📑 Orders Management</a>
             <a href="?view=users" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "users".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">👥 Users Management</a>
@@ -52,7 +59,8 @@
         <div class="bg-white rounded-2xl shadow-sm p-6 flex justify-between items-center mb-8">
             <div>
                 <h2 class="text-3xl font-bold text-slate-800 capitalize"><%= view.replace("-", " ") %></h2>
-                <p class="text-slate-500 mt-1">Welcome back, <span class="font-semibold"><%= session.getAttribute("loggedUserName") %></span></p>
+                <p class="text-slate-500 mt-1">Welcome back,
+                    <span class="font-semibold"><%= session.getAttribute("loggedUserName") %></span></p>
             </div>
             <div class="bg-slate-100 px-5 py-3 rounded-xl">
                 <span class="text-slate-500 text-sm">Logged in as</span>
@@ -64,6 +72,8 @@
         <jsp:include page="views/products-content.jsp" />
         <% } else if ("categories".equals(view)) { %>
         <jsp:include page="views/categories-content.jsp" />
+        <% } else if ("brands".equals(view)) { %>
+        <jsp:include page="views/brands-content.jsp" />
         <% } else if ("orders".equals(view)) { %>
         <jsp:include page="views/orders-content.jsp" />
         <% } else if ("inventory".equals(view)) { %>

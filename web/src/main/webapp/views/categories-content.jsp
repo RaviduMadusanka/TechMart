@@ -37,7 +37,6 @@
             </table>
         </div>
 
-        <!-- අලුතින් එකතු කළ Pagination කොටස -->
         <div class="flex items-center justify-between mt-6">
             <p class="text-sm text-slate-500">Showing <span id="pageStart" class="font-medium text-slate-700">0</span> to <span id="pageEnd" class="font-medium text-slate-700">0</span> of <span id="pageTotal" class="font-medium text-slate-700">0</span> categories</p>
             <div class="flex gap-2">

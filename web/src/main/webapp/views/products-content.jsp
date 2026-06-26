@@ -1,6 +1,5 @@
 <div class="bg-white p-8 rounded-2xl shadow-sm relative">
 
-    <!-- Action Bar -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div class="relative w-full md:w-80">
             <input type="text" placeholder="Search by product code or name..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
@@ -38,7 +37,6 @@
         </table>
     </div>
 
-    <!-- Pagination Section - Updated with IDs and OnClick -->
     <div class="flex items-center justify-between mt-6">
         <p class="text-sm text-slate-500">Showing <span id="pageStart" class="font-medium text-slate-700">0</span> to <span id="pageEnd" class="font-medium text-slate-700">0</span> of <span id="pageTotal" class="font-medium text-slate-700">0</span> results</p>
         <div class="flex gap-2">
@@ -49,7 +47,6 @@
     </div>
 </div>
 
-<!-- Add/Update Modal -->
 <div id="addProductModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
 
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden transform scale-95 transition-transform duration-300" id="modalBox">

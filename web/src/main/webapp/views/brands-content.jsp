@@ -1,6 +1,5 @@
 <div class="flex flex-col xl:flex-row gap-6">
 
-    <!-- වම් පැත්ත: Brands Table එක -->
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex-1">
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -9,7 +8,6 @@
                 <p class="text-sm text-slate-500 mt-1">Manage all your product brands here.</p>
             </div>
 
-            <!-- Search Box -->
             <div class="relative w-full sm:w-72">
                 <input type="text" placeholder="Search brands..."
                        class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/20 transition-all">
@@ -29,18 +27,21 @@
                 </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100" id="brandTableBody">
-                <!-- Data එක JS වලින් Load වෙනවා -->
                 </tbody>
             </table>
         </div>
 
-        <div class="flex items-center justify-between mt-4 text-sm text-slate-500">
-            <p id="brandCount">Loading...</p>
+        <div class="flex items-center justify-between mt-6">
+            <p class="text-sm text-slate-500">Showing <span id="pageStart" class="font-medium text-slate-700">0</span> to <span id="pageEnd" class="font-medium text-slate-700">0</span> of <span id="pageTotal" class="font-medium text-slate-700">0</span> results</p>
+            <div class="flex gap-2">
+                <button id="btnPrev" onclick="prevPage()" disabled class="px-3 py-1.5 border border-slate-200 text-slate-400 rounded-lg text-sm font-medium cursor-not-allowed transition-colors">Previous</button>
+                <button id="btnCurrentPage" class="px-3 py-1.5 bg-brand-50 text-brand-600 rounded-lg text-sm font-medium">1</button>
+                <button id="btnNext" onclick="nextPage()" disabled class="px-3 py-1.5 border border-slate-200 text-slate-400 rounded-lg text-sm font-medium cursor-not-allowed transition-colors">Next</button>
+            </div>
         </div>
 
     </div>
 
-    <!-- දකුණු පැත්ත: අලුත් Brand එකක් Add කරන Form එක -->
     <div class="w-full xl:w-[350px]">
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 sticky top-6">
 
@@ -71,7 +72,6 @@
 
 </div>
 
-<!-- JS ලින්ක් කිරීම -->
 <script>
     if (typeof CONTEXT_PATH === 'undefined') {
         var CONTEXT_PATH = '${pageContext.request.contextPath}';

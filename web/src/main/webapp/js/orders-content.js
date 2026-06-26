@@ -65,9 +65,9 @@ function loadOrders() {
                     <td class="py-4 px-5 border-b border-slate-100">${statusHtml}</td>
                     <td class="py-4 px-5 border-b border-slate-100 text-right">
                         <div class="flex gap-2 justify-end">
-                            <!-- View Button -->
+
                             <button onclick="openOrderPanel(${order.orderId})" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm">View</button>
-                            <!-- Update Button -->
+
                             <button onclick="openUpdateModal(${order.orderId}, '${statusStr}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm">Update</button>
                         </div>
                     </td>

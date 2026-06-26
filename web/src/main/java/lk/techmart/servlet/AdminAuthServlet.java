@@ -1,4 +1,4 @@
-package lk.techmart.web;
+package lk.techmart.servlet;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
@@ -32,7 +32,7 @@ public class AdminAuthServlet extends HttpServlet {
         }
 
         if (session != null && "ADMIN".equals(session.getAttribute("userRole"))) {
-            req.getRequestDispatcher("/admin-dashboard.jsp").forward(req, resp);
+            req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
             return;
         }
 
@@ -47,12 +47,14 @@ public class AdminAuthServlet extends HttpServlet {
         if (admin != null) {
             HttpSession session = req.getSession(true);
             session.setAttribute("loggedUserId", admin.getUserId());
-            session.setAttribute("loggedUserEmail", admin.getUsername());
-            session.setAttribute("userRole", admin.getRole());
+
+            session.setAttribute("loggedUserName", admin.getUsername());
+            session.setAttribute("loggedUserEmail", admin.getEmail());
+            session.setAttribute("userRole", admin.getUserTypeName());
 
             resp.sendRedirect(req.getContextPath() + "/admin-auth");
         } else {
-            req.setAttribute("errorMessage", "Prawesh nakarla! (Access Denied! Invalid Credentials.)");
+            req.setAttribute("errorMessage", "Access Denied! Invalid Credentials.");
             req.getRequestDispatcher("/admin-login.jsp").forward(req, resp);
         }
     }

@@ -5,7 +5,11 @@ public class AdminDTO {
     private Long userId;
     private String username;
     private String password;
-    private String role;
+    private String email;
+    private Long userTypeId;
+    private String userTypeName;
+    private Long statusId;
+    private String statusName;
 
     public Long getUserId() {
         return userId;
@@ -31,11 +35,43 @@ public class AdminDTO {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
+    public String getEmail() {
+        return email;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Long getUserTypeId() {
+        return userTypeId;
+    }
+
+    public void setUserTypeId(Long userTypeId) {
+        this.userTypeId = userTypeId;
+    }
+
+    public String getUserTypeName() {
+        return userTypeName;
+    }
+
+    public void setUserTypeName(String userTypeName) {
+        this.userTypeName = userTypeName;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 }

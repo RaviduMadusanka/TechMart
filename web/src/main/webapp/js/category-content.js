@@ -2,12 +2,10 @@ if (typeof CONTEXT_PATH === 'undefined') {
     var CONTEXT_PATH = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
 }
 
-// --- Pagination සඳහා Global Variables ---
 let allCategoriesList = [];
 let currentPage = 1;
-const itemsPerPage = 5; // එක පිටුවක පෙන්වන ගාණ
+const itemsPerPage = 5;
 
-// 1. Database එකෙන් Categories අරන් Array එකට දානවා
 function loadCategories() {
     const tableBody = document.getElementById('categoryTableBody');
     if (!tableBody) return;
@@ -40,7 +38,6 @@ function loadCategories() {
         });
 }
 
-// 2. අදාළ පිටුවට අදාළ Categories ටික විතරක් Table එකේ අඳිනවා
 function renderCategoryTable() {
     const tableBody = document.getElementById('categoryTableBody');
     tableBody.innerHTML = '';
@@ -57,7 +54,6 @@ function renderCategoryTable() {
         return;
     }
 
-    // Pagination ගණන් හැදීම
     const totalItems = allCategoriesList.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -67,7 +63,6 @@ function renderCategoryTable() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
-    // අදාළ කෑල්ල කපාගැනීම (Slice)
     const currentItems = allCategoriesList.slice(startIndex, endIndex);
 
     currentItems.forEach(category => {
@@ -104,7 +99,6 @@ function renderCategoryTable() {
     updatePaginationUI(startIndex + 1, endIndex, totalItems);
 }
 
-// 3. UI එකේ බොත්තම් Update කිරීම
 function updatePaginationUI(start, end, total) {
     document.getElementById('pageStart').innerText = total === 0 ? 0 : start;
     document.getElementById('pageEnd').innerText = total === 0 ? 0 : end;
@@ -136,7 +130,6 @@ function updatePaginationUI(start, end, total) {
     }
 }
 
-// 4. Previous බොත්තම
 function prevPage() {
     if (currentPage > 1) {
         currentPage--;
@@ -144,7 +137,6 @@ function prevPage() {
     }
 }
 
-// 5. Next බොත්තම
 function nextPage() {
     const totalPages = Math.ceil(allCategoriesList.length / itemsPerPage);
     if (currentPage < totalPages) {
@@ -155,7 +147,6 @@ function nextPage() {
 
 document.addEventListener('DOMContentLoaded', loadCategories);
 
-// --- Add Category Form Logic ---
 const addCategoryForm = document.getElementById('addCategoryForm');
 
 if (addCategoryForm) {
@@ -194,7 +185,7 @@ if (addCategoryForm) {
                     msgDiv.innerText = data.message;
 
                     this.reset();
-                    loadCategories(); // සේව් වුණාම Table එක අලුත් වෙනවා
+                    loadCategories();
                 } else {
                     msgDiv.className = 'mb-4 text-sm font-medium text-red-700 bg-red-50 p-3 rounded-xl border border-red-200';
                     msgDiv.innerText = data.message || "Failed to add category.";

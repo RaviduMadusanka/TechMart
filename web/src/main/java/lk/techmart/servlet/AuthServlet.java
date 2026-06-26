@@ -9,7 +9,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lk.techmart.core.dto.AdminDTO;
 import lk.techmart.core.dto.CustomerDTO;
+import lk.techmart.core.entity.User;
+import lk.techmart.core.service.AdminService;
 import lk.techmart.core.service.CustomerService;
 
 import java.io.IOException;
@@ -19,6 +22,9 @@ public class AuthServlet extends HttpServlet {
 
     @EJB
     private CustomerService customerService;
+
+    @EJB
+    private AdminService adminService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -66,13 +72,31 @@ public class AuthServlet extends HttpServlet {
             }
 
         } else if ("login".equals(action)) {
-            CustomerDTO user = customerService.loginCustomer(req.getParameter("email"), req.getParameter("password"));
+            String email = req.getParameter("email");
+            String password = req.getParameter("password");
 
-            if (user != null) {
+            AdminDTO adminUser = adminService.loginAdmin(email, password);
+
+            if (adminUser != null) {
+                System.out.println("DEBUG: Session username is: " + adminUser.getUsername());
                 HttpSession session = req.getSession(true);
-                session.setAttribute("loggedUserId", user.getCustomerId());
-                session.setAttribute("loggedUserEmail", user.getEmail());
-                session.setAttribute("loggedUserName", user.getFirstName() + " " + user.getLastName());
+                session.setAttribute("loggedUserId", adminUser.getUserId());
+                session.setAttribute("loggedUserEmail", adminUser.getEmail());
+                session.setAttribute("loggedUserName", adminUser.getUsername());
+                session.setAttribute("userRole", adminUser.getUserTypeName());
+
+                resp.sendRedirect(req.getContextPath() + "/dashboard.jsp");
+                return;
+            }
+
+            CustomerDTO customer = customerService.loginCustomer(email, password);
+
+            if (customer != null) {
+                HttpSession session = req.getSession(true);
+                session.setAttribute("loggedUserId", customer.getCustomerId());
+                session.setAttribute("loggedUserEmail", customer.getEmail());
+                session.setAttribute("loggedUserName", customer.getFirstName() + " " + customer.getLastName());
+                session.setAttribute("userRole", "CUSTOMER");
 
                 resp.sendRedirect(req.getContextPath() + "/home.jsp");
             } else {
