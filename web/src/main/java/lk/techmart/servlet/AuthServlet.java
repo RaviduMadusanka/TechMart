@@ -40,7 +40,7 @@ public class AuthServlet extends HttpServlet {
         }
 
         if (session != null && session.getAttribute("loggedUserEmail") != null) {
-            req.getRequestDispatcher("/home.jsp").forward(req, resp);
+            req.getRequestDispatcher("/home").forward(req, resp);
             return;
         }
 
@@ -98,7 +98,7 @@ public class AuthServlet extends HttpServlet {
                 session.setAttribute("loggedUserName", customer.getFirstName() + " " + customer.getLastName());
                 session.setAttribute("userRole", "CUSTOMER");
 
-                resp.sendRedirect(req.getContextPath() + "/home.jsp");
+                resp.sendRedirect(req.getContextPath() + "/home");
             } else {
                 req.setAttribute("errorMessage", "Invalid Email or Password!");
                 req.getRequestDispatcher("/login.jsp").forward(req, resp);
