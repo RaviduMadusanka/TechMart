@@ -74,24 +74,20 @@
                 </div>
             </div>
 
-            <!-- Nav Actions -->
             <div class="flex items-center gap-1">
                 <%
-                    // සෙෂන් එකෙන් යූසර්ගේ නම ගන්නවා
                     Object loggedUser = session.getAttribute("loggedUserName");
 
                     if (loggedUser == null) {
-                        // 1. යූසර් ලොග් වෙලා නැත්නම් "Sign In" බටන් එක පෙන්වනවා
                 %>
                 <a href="login.jsp" class="flex flex-col items-center px-3 py-1.5 text-gray-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors group">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                     <span class="text-xs mt-0.5 font-medium">Sign In</span>
-                </a>
+                </a>.0
                 <%
                 } else {
-                    // 2. යූසර් ලොග් වෙලා නම් නම සහ Bootstrap Dropdown එක පෙන්වනවා
                     String userName = loggedUser.toString();
                 %>
                 <div class="dropdown">

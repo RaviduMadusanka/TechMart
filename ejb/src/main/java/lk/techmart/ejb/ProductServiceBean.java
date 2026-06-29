@@ -92,8 +92,32 @@ public class ProductServiceBean implements ProductService {
         if (p == null) return null;
 
         ProductDTO dto = new ProductDTO();
+
         dto.setProductId(p.getProductId());
         dto.setProductCode(p.getProductCode());
+        dto.setProductName(p.getProductName());
+        dto.setDescription(p.getDescription());
+        dto.setPrice(p.getPrice());
+        dto.setCostPrice(p.getCostPrice());
+        dto.setImageUrl(p.getImageUrl());
+        dto.setWeight(p.getWeight());
+
+        if (p.getCategory() != null) {
+            CategoryDTO catDto = new CategoryDTO();
+            catDto.setCategoryId(p.getCategory().getCategoryId());
+            catDto.setName(p.getCategory().getName());
+            dto.setCategory(catDto);
+        }
+
+        if (p.getBrand() != null) {
+            BrandDTO brandDto = new BrandDTO();
+            brandDto.setBrandId(p.getBrand().getBrandId());
+            brandDto.setName(p.getBrand().getName());
+            dto.setBrand(brandDto);
+        }
+
+        dto.setStatus(p.getStatus() != null ? p.getStatus().getStatusName() : "ACTIVE");
+
         return dto;
     }
 

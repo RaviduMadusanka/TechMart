@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, lk.techmart.core.dto.ProductDTO, lk.techmart.core.dto.CategoryDTO"%>
 <%
-
     request.setAttribute("pageTitle", "Home - Latest Tech Deals");
 
     List<CategoryDTO> categoriesList = (List<CategoryDTO>) request.getAttribute("categoriesList");
@@ -15,6 +14,28 @@
 <%@ include file="WEB-INF/includes/header.jsp" %>
 
 <main class="flex-1">
+
+    <%
+        String cartSuccess = (String) session.getAttribute("cartSuccessMessage");
+        if (cartSuccess != null) {
+    %>
+    <div id="cartAlert" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 animate-bounce">
+        <div class="bg-emerald-50 border border-emerald-400 text-emerald-800 px-4 py-3 rounded-xl relative flex items-center justify-between shadow-sm" role="alert">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="font-medium text-sm"><%= cartSuccess %></span>
+            </div>
+            <button onclick="document.getElementById('cartAlert').style.display='none'" class="text-emerald-600 hover:text-emerald-800 font-bold text-lg focus:outline-none">
+                &times;
+            </button>
+        </div>
+    </div>
+    <%
+            session.removeAttribute("cartSuccessMessage");
+        }
+    %>
 
     <!-- Hero Banner -->
     <section class="bg-gradient-to-r from-brand-800 via-brand-700 to-brand-600 text-white">
@@ -74,7 +95,7 @@
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">Featured Products</h2>
-                <p class="text-gray-500 text-sm mt-1">Showing 8 of 124 products</p>
+                <p class="text-gray-500 text-sm mt-1">Showing all available products</p>
             </div>
             <div class="flex items-center gap-3">
                 <select id="categorySelect" name="categoryId" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
@@ -104,14 +125,19 @@
                 if (productsList != null && !productsList.isEmpty()) {
                     for (ProductDTO p : productsList) {
                         String priceStr = String.format("%.2f", p.getPrice());
-                        String imageSrc = p.getImageUrl() != null ? request.getContextPath() + "/" + p.getImageUrl() : "";
+
+                        String imageSrc = (p.getImageUrl() != null && !p.getImageUrl().trim().isEmpty())
+                                ? request.getContextPath() + "/image?file=" + p.getImageUrl()
+                                : "";
             %>
             <div class="product-card bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
                 <a href="product-detail.jsp?id=<%= p.getProductId() %>">
                     <div class="relative overflow-hidden bg-gray-50 h-48 flex items-center justify-center">
                         <% if (!imageSrc.isEmpty()) { %>
+                        <!-- Image එක මෙතනින් Load වෙයි -->
                         <img src="<%= imageSrc %>" alt="<%= p.getProductName() %>" class="object-cover h-full w-full" />
                         <% } else { %>
+                        <!-- Image එකක් නැත්නම් මේක පෙන්වයි -->
                         <div class="product-img w-28 h-28 bg-gradient-to-br from-brand-100 to-brand-200 rounded-xl flex items-center justify-center">
                             <svg class="w-14 h-14 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/>
@@ -122,7 +148,9 @@
                 </a>
 
                 <div class="p-4">
-                    <p class="text-xs text-brand-600 font-medium mb-1 uppercase tracking-wide">TechMart</p>
+                    <p class="text-xs text-brand-600 font-medium mb-1 uppercase tracking-wide">
+                        <%= p.getCategory() != null ? p.getCategory().getName() : "TechMart" %>
+                    </p>
                     <a href="product-detail.jsp?id=<%= p.getProductId() %>">
                         <h3 class="text-sm font-semibold text-gray-900 hover:text-brand-600 transition-colors mb-2 line-clamp-2"><%= p.getProductName() %></h3>
                     </a>
@@ -134,11 +162,12 @@
 
                     <div class="flex items-center justify-between">
                         <div>
-                            <span class="text-lg font-bold text-gray-900">$<%= priceStr %></span>
+                            <span class="text-lg font-bold text-gray-900">Rs.<%= priceStr %></span>
                         </div>
-                        <form action="CartServlet" method="post">
+                        <form action="cart-action" method="post">
                             <input type="hidden" name="productId" value="<%= p.getProductId() %>"/>
                             <input type="hidden" name="action" value="add"/>
+                            <input type="hidden" name="qty" value="1">
                             <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors active:scale-95">
                                 + Cart
                             </button>
@@ -150,7 +179,7 @@
                 }
             } else {
             %>
-            <div class="col-span-full text-center py-10 text-gray-500">No products available.</div>
+            <div class="col-span-full text-center py-10 text-gray-500">No products available at the moment.</div>
             <%
                 }
             %>
@@ -180,6 +209,4 @@
     </section>
 </main>
 
-
 <%@ include file="WEB-INF/includes/footer.jsp" %>
-

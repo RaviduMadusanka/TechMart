@@ -11,11 +11,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lk.techmart.core.dto.AdminDTO;
 import lk.techmart.core.dto.CustomerDTO;
+import lk.techmart.core.entity.CartItem;
+import lk.techmart.core.entity.ShoppingCart;
 import lk.techmart.core.entity.User;
 import lk.techmart.core.service.AdminService;
+import lk.techmart.core.service.CartService;
 import lk.techmart.core.service.CustomerService;
+import lk.techmart.ejb.ShoppingCartBean;
 
+import javax.naming.InitialContext;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @WebServlet("/auth")
 public class AuthServlet extends HttpServlet {
@@ -25,6 +32,9 @@ public class AuthServlet extends HttpServlet {
 
     @EJB
     private AdminService adminService;
+
+    @EJB
+    private CartService cartService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -97,6 +107,41 @@ public class AuthServlet extends HttpServlet {
                 session.setAttribute("loggedUserEmail", customer.getEmail());
                 session.setAttribute("loggedUserName", customer.getFirstName() + " " + customer.getLastName());
                 session.setAttribute("userRole", "CUSTOMER");
+
+                try {
+                    ShoppingCartBean cartBean = (ShoppingCartBean) session.getAttribute("shoppingCart");
+                    if (cartBean == null) {
+                        InitialContext ic = new InitialContext();
+                        try {
+                            cartBean = (ShoppingCartBean) ic.lookup("java:app/ejb/ShoppingCartBean");
+                        } catch (Exception e1) {
+                            try {
+                                cartBean = (ShoppingCartBean) ic.lookup("java:app/ejb-1.0-SNAPSHOT/ShoppingCartBean");
+                            } catch (Exception e2) {
+                                cartBean = (ShoppingCartBean) ic.lookup("java:module/ShoppingCartBean");
+                            }
+                        }
+                        session.setAttribute("shoppingCart", cartBean);
+                    }
+
+                    Map<Long, Integer> guestItems = new HashMap<>(cartBean.getCartItems());
+                    for (Map.Entry<Long, Integer> entry : guestItems.entrySet()) {
+                        cartService.addItem(customer.getCustomerId(), entry.getKey(), entry.getValue());
+                    }
+
+                    ShoppingCart dbCart = cartService.getCartByCustomer(customer.getCustomerId());
+                    cartBean.clearCart();
+
+                    if (dbCart != null && dbCart.getItems() != null) {
+                        for (CartItem item : dbCart.getItems()) {
+                            cartBean.addItem(item.getProduct().getProductId(), item.getQuantity());
+                        }
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Error syncing cart: " + e.getMessage());
+                }
+
 
                 resp.sendRedirect(req.getContextPath() + "/home");
             } else {

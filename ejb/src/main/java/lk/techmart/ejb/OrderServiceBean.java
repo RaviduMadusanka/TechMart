@@ -125,12 +125,11 @@ public class OrderServiceBean implements OrderService {
 
         Customer customer = em.find(Customer.class, customerId);
         if (customer == null) {
-            throw new Exception("Customer kenek na! ID: " + customerId);
+            throw new Exception("No Customer! ID: " + customerId);
         }
 
         Orders order = new Orders();
         order.setCustomer(customer);
-//        order.setOrderStatus("PENDING");
         order.setTotalAmount(BigDecimal.ZERO);
 
         em.persist(order);
@@ -144,12 +143,12 @@ public class OrderServiceBean implements OrderService {
 
             boolean stockAvailable = inventoryService.reduceStock(productId, quantity);
             if (!stockAvailable) {
-                throw new Exception("Sorry! Product ID: " + productId + " eke oya illana tharam stock naha!");
+                throw new Exception("Sorry! Product ID: " + productId + " No Stock!");
             }
 
             Product product = em.find(Product.class, productId);
             if (product == null) {
-                throw new Exception("Product eka na! ID: " + productId);
+                throw new Exception("None product id! ID: " + productId);
             }
 
             OrderItem item = new OrderItem();
