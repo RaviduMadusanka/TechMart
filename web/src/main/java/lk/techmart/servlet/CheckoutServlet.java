@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpSession;
 import lk.techmart.core.dto.ProductDTO;
 import lk.techmart.core.service.OrderService;
 import lk.techmart.core.service.ProductService;
-import lk.techmart.core.service.CartService;
 import lk.techmart.ejb.ShoppingCartBean;
 
 import java.io.IOException;
@@ -27,9 +26,6 @@ public class CheckoutServlet extends HttpServlet {
 
     @EJB
     private ProductService productService;
-
-    @EJB
-    private CartService cartService;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -49,6 +45,14 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
+        String firstName = request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String address = request.getParameter("address");
+        String city = request.getParameter("city");
+        String country = request.getParameter("country");
+
         try {
             Map<Long, Integer> cartItems = shoppingCart.getCartItems();
             Long orderId = orderService.placeOrder(customerId, cartItems);
@@ -64,7 +68,6 @@ public class CheckoutServlet extends HttpServlet {
             double total = subtotal + tax;
 
             String amountFormatted = String.format("%.2f", total);
-
             String merchantId = "1225567";
             String merchantSecret = "MTM4NjMyNDYyNTU1MDg0NTkyNjEwMjE3MDEzNDE2NDc5MTM5OTc=";
             String currency = "LKR";
@@ -79,11 +82,13 @@ public class CheckoutServlet extends HttpServlet {
             request.setAttribute("currency", currency);
             request.setAttribute("hash", hash);
 
-            request.setAttribute("firstName", session.getAttribute("loggedUserName"));
-            request.setAttribute("email", session.getAttribute("loggedUserEmail"));
-
-//            shoppingCart.clearCart();
-//            cartService.clearCart(customerId);
+            request.setAttribute("firstName", firstName != null ? firstName : session.getAttribute("loggedUserName"));
+            request.setAttribute("lastName", lastName != null ? lastName : "");
+            request.setAttribute("email", email != null ? email : session.getAttribute("loggedUserEmail"));
+            request.setAttribute("phone", phone != null ? phone : "");
+            request.setAttribute("address", address != null ? address : "");
+            request.setAttribute("city", city != null ? city : "");
+            request.setAttribute("country", country != null ? country : "Sri Lanka");
 
             request.getRequestDispatcher("/payhere_redirect.jsp").forward(request, response);
 

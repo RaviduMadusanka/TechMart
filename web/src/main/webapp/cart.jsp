@@ -168,13 +168,9 @@
                     </div>
 
                     <% if (session.getAttribute("loggedUserId") != null) { %>
-                    <form action="checkout" method="POST" class="m-0">
-                        <button type="submit" class="w-full block text-center bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-sm active:scale-[0.98] flex items-center justify-center gap-2">
-                            <span>Pay securely with</span>
-                            <span class="font-black italic tracking-tighter">PayHere</span>
-                            <span>→</span>
-                        </button>
-                    </form>
+                    <a href="checkout.jsp" class="w-full block text-center bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-sm active:scale-[0.98] flex items-center justify-center gap-2">
+                        Proceed to Checkout →
+                    </a>
                     <% } else { %>
                     <a href="auth?action=login" class="w-full block text-center bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-4 rounded-lg transition-colors text-sm">
                         Login to Checkout
