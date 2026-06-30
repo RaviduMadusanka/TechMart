@@ -12,6 +12,7 @@ public interface OrderService {
     OrderDTO getOrderById(Long orderId);
     boolean updateOrderStatus(Long orderId, String newStatus);
     List<String> getAllOrderStatuses();
-    Long placeOrder(Long customerId, Map<Long, Integer> cartItems) throws Exception;
+    Long placeOrder(Long customerId, Map<Long, Integer> cartItems,String address) throws Exception;
+    boolean processPaymentSuccess(Long orderId);
 
 }

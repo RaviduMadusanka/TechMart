@@ -11,11 +11,10 @@
 <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 text-center">
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"></div>
     <h2 class="text-xl font-bold text-gray-800">Initializing Secure Payment...</h2>
-    <p class="text-sm text-gray-500 mt-2">Please do not refresh the page.</p>
+    <p class="text-sm text-gray-500 mt-2">Please wait, do not refresh the page.</p>
 </div>
 
-<script>
-
+<script>ා
     var payment = {
         "sandbox": true,
         "merchant_id": "<%= request.getAttribute("merchantId") %>",
@@ -31,18 +30,16 @@
         "hash": "<%= request.getAttribute("hash") %>",
 
         "first_name": "<%= request.getAttribute("firstName") %>",
-        "last_name": "<%= request.getAttribute("lastName") %>",
+        "last_name": "",
         "email": "<%= request.getAttribute("email") %>",
-        "phone": "<%= request.getAttribute("phone") %>",
+        "phone": "",
         "address": "<%= request.getAttribute("address") %>",
         "city": "<%= request.getAttribute("city") %>",
         "country": "<%= request.getAttribute("country") %>",
 
         "delivery_address": "<%= request.getAttribute("address") %>",
         "delivery_city": "<%= request.getAttribute("city") %>",
-        "delivery_country": "<%= request.getAttribute("country") %>",
-        "custom_1": "",
-        "custom_2": ""
+        "delivery_country": "<%= request.getAttribute("country") %>"
     };
 
     payhere.onCompleted = function onCompleted(orderId) {

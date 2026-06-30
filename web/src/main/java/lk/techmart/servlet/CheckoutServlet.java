@@ -29,11 +29,14 @@ public class CheckoutServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("loggedUserId") == null) {
-            session.setAttribute("errorMessage", "Please login to proceed to checkout!");
-            response.sendRedirect("auth?action=login");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\": \"Please login to proceed to checkout!\"}");
             return;
         }
 
@@ -41,7 +44,8 @@ public class CheckoutServlet extends HttpServlet {
         ShoppingCartBean shoppingCart = (ShoppingCartBean) session.getAttribute("shoppingCart");
 
         if (shoppingCart == null || shoppingCart.getCartItems().isEmpty()) {
-            response.sendRedirect("cart.jsp");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\": \"Your cart is empty!\"}");
             return;
         }
 
@@ -53,9 +57,10 @@ public class CheckoutServlet extends HttpServlet {
         String city = request.getParameter("city");
         String country = request.getParameter("country");
 
+
         try {
             Map<Long, Integer> cartItems = shoppingCart.getCartItems();
-            Long orderId = orderService.placeOrder(customerId, cartItems);
+            Long orderId = orderService.placeOrder(customerId, cartItems,address);
 
             double subtotal = 0.0;
             for (Map.Entry<Long, Integer> entry : cartItems.entrySet()) {
@@ -69,32 +74,28 @@ public class CheckoutServlet extends HttpServlet {
 
             String amountFormatted = String.format("%.2f", total);
             String merchantId = "1225567";
-            String merchantSecret = "MTM4NjMyNDYyNTU1MDg0NTkyNjEwMjE3MDEzNDE2NDc5MTM5OTc=";
+            String merchantSecret = "Mzk4NjcxODE0MTQyMjU4MzA3NzkzNDY2NTE4ODUwMTk2NDE5OTUwOQ==";
             String currency = "LKR";
 
             String hashedSecret = getMd5(merchantSecret).toUpperCase();
             String hashString = merchantId + orderId + amountFormatted + currency + hashedSecret;
             String hash = getMd5(hashString).toUpperCase();
 
-            request.setAttribute("merchantId", merchantId);
-            request.setAttribute("orderId", orderId);
-            request.setAttribute("amount", amountFormatted);
-            request.setAttribute("currency", currency);
-            request.setAttribute("hash", hash);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
 
-            request.setAttribute("firstName", firstName != null ? firstName : session.getAttribute("loggedUserName"));
-            request.setAttribute("lastName", lastName != null ? lastName : "");
-            request.setAttribute("email", email != null ? email : session.getAttribute("loggedUserEmail"));
-            request.setAttribute("phone", phone != null ? phone : "");
-            request.setAttribute("address", address != null ? address : "");
-            request.setAttribute("city", city != null ? city : "");
-            request.setAttribute("country", country != null ? country : "Sri Lanka");
+            String jsonResponse = String.format(
+                    "{\"merchantId\":\"%s\", \"orderId\":\"%s\", \"amount\":\"%s\", \"currency\":\"%s\", \"hash\":\"%s\", \"firstName\":\"%s\", \"lastName\":\"%s\", \"email\":\"%s\", \"phone\":\"%s\", \"address\":\"%s\", \"city\":\"%s\", \"country\":\"%s\"}",
+                    merchantId, orderId, amountFormatted, currency, hash,
+                    firstName, lastName, email, phone, address, city, country
+            );
 
-            request.getRequestDispatcher("/payhere_redirect.jsp").forward(request, response);
+            response.getWriter().write(jsonResponse);
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().println("Error processing checkout: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Error processing checkout\"}");
         }
     }
 

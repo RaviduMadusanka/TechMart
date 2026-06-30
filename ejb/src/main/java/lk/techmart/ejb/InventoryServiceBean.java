@@ -5,6 +5,10 @@ import jakarta.ejb.Lock;
 import jakarta.ejb.LockType;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lk.techmart.core.entity.Inventory;
+import lk.techmart.core.entity.Product;
 import lk.techmart.core.service.InventoryService;
 
 import java.util.HashMap;
@@ -17,6 +21,9 @@ public class InventoryServiceBean implements InventoryService {
 
     private Map<Long, Integer> stockMap;
     private Map<Long, Integer> stockMemory = new HashMap<>();
+
+    @PersistenceContext(unitName = "techmartPU")
+    private EntityManager em;
 
     @PostConstruct
     public void init() {
@@ -38,15 +45,19 @@ public class InventoryServiceBean implements InventoryService {
     @Override
     @Lock(LockType.WRITE)
     public boolean reduceStock(Long productId, int quantity) {
-        int currentStock = stockMap.getOrDefault(productId, 0);
+        Product product = em.find(Product.class, productId);
 
-        if (currentStock >= quantity) {
-            stockMap.put(productId, currentStock - quantity);
-            System.out.println("Stock Reduced: Product " + productId + " | Remaining: " + stockMap.get(productId));
+        Inventory inventory = em.createQuery("SELECT i FROM Inventory i WHERE i.product.productId = :pid", Inventory.class)
+                .setParameter("pid", productId)
+                .getSingleResult();
+
+        if (inventory != null && inventory.getQuantity() >= quantity) {
+            inventory.setQuantity(inventory.getQuantity() - quantity);
+            em.merge(inventory);
+            em.flush();
             return true;
         }
 
-        System.out.println("Out of Stock: Product " + productId);
         return false;
     }
 

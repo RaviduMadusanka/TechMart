@@ -121,16 +121,21 @@ public class OrderServiceBean implements OrderService {
         return em.createQuery("SELECT s.statusName FROM OrderStatus s", String.class).getResultList();
     }
 
-    public Long placeOrder(Long customerId, Map<Long, Integer> cartItems) throws Exception {
+    @Override
+    public Long placeOrder(Long customerId, Map<Long, Integer> cartItems, String address) throws Exception {
 
         Customer customer = em.find(Customer.class, customerId);
         if (customer == null) {
-            throw new Exception("No Customer! ID: " + customerId);
+            throw new RuntimeException("No Customer! ID: " + customerId);
         }
+
+        OrderStatus pendingStatus = em.createQuery("SELECT s FROM OrderStatus s WHERE s.statusName = 'Pending'", OrderStatus.class).getSingleResult();
 
         Orders order = new Orders();
         order.setCustomer(customer);
         order.setTotalAmount(BigDecimal.ZERO);
+        order.setOrderStatus(pendingStatus);
+        order.setShipping_address(address);
 
         em.persist(order);
         em.flush();
@@ -141,14 +146,21 @@ public class OrderServiceBean implements OrderService {
             Long productId = entry.getKey();
             Integer quantity = entry.getValue();
 
-            boolean stockAvailable = inventoryService.reduceStock(productId, quantity);
-            if (!stockAvailable) {
-                throw new Exception("Sorry! Product ID: " + productId + " No Stock!");
-            }
-
             Product product = em.find(Product.class, productId);
             if (product == null) {
-                throw new Exception("None product id! ID: " + productId);
+                throw new RuntimeException("None product id! ID: " + productId);
+            }
+
+            try {
+                Inventory inventory = em.createQuery("SELECT i FROM Inventory i WHERE i.product.productId = :pid", Inventory.class)
+                        .setParameter("pid", productId)
+                        .getSingleResult();
+
+                if (inventory == null || inventory.getQuantity() < quantity) {
+                    throw new RuntimeException("Sorry! Product ID: " + productId + " No Stock!");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Product not found in inventory! ID: " + productId);
             }
 
             OrderItem item = new OrderItem();
@@ -158,7 +170,6 @@ public class OrderServiceBean implements OrderService {
             item.setUnitPrice(product.getPrice());
 
             em.persist(item);
-
 
             BigDecimal itemTotal = product.getPrice().multiply(new BigDecimal(quantity));
             totalAmount = totalAmount.add(itemTotal);
@@ -171,6 +182,55 @@ public class OrderServiceBean implements OrderService {
         return order.getOrderId();
     }
 
+    @Override
+    public boolean processPaymentSuccess(Long orderId) {
+        try {
+            Orders order = em.find(Orders.class, orderId);
+            if (order == null) {
+                System.out.println("Order not found!");
+                return false;
+            }
+
+            OrderStatus paidStatus = em.createQuery("SELECT s FROM OrderStatus s WHERE s.statusName = 'Processing'", OrderStatus.class).getSingleResult();
+            order.setOrderStatus(paidStatus);
+
+            List<OrderItem> items = em.createQuery("SELECT i FROM OrderItem i WHERE i.order.orderId = :oid", OrderItem.class)
+                    .setParameter("oid", orderId)
+                    .getResultList();
+
+            for (OrderItem item : items) {
+                Long productId = item.getProduct().getProductId();
+                int purchasedQty = item.getQuantity();
+                try {
+                    Inventory inventory = em.createQuery("SELECT i FROM Inventory i WHERE i.product.productId = :pid", Inventory.class)
+                            .setParameter("pid", productId)
+                            .getSingleResult();
+
+                    inventory.setQuantity(inventory.getQuantity() - purchasedQty);
+                    em.merge(inventory);
+                } catch (Exception e) {
+                    System.out.println("Could not update inventory for Product ID: " + productId);
+                }
+            }
+
+            try {
+                Long customerId = order.getCustomer().getCustomerId();
+                String deleteQuery = "DELETE FROM cart_items WHERE cart_id = (SELECT cart_id FROM shopping_cart WHERE customer_id = ?)";
+                int deletedCount = em.createNativeQuery(deleteQuery).setParameter(1, customerId).executeUpdate();
+                System.out.println("Successfully deleted " + deletedCount + " items from cart_items table.");
+            } catch (Exception e) {
+                System.out.println("Error deleting from cart_items: " + e.getMessage());
+            }
+
+            em.merge(order);
+            em.flush();
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error in processing payment success: " + e.getMessage());
+            return false;
+        }
+    }
 
 
 }
