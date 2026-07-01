@@ -37,7 +37,6 @@
         }
     %>
 
-    <!-- Hero Banner -->
     <section class="bg-gradient-to-r from-brand-800 via-brand-700 to-brand-600 text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col md:flex-row items-center gap-10">
             <div class="flex-1">
@@ -66,7 +65,6 @@
         </div>
     </section>
 
-    <!-- Trust Badges -->
     <section class="bg-white border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 py-5 grid grid-cols-2 md:grid-cols-4 gap-6 text-sm text-gray-600">
             <div class="flex items-center gap-3">
@@ -88,10 +86,8 @@
         </div>
     </section>
 
-    <!-- Product Listing -->
     <section id="products" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-        <!-- Section Header + Filters -->
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">Featured Products</h2>
@@ -131,13 +127,11 @@
                                 : "";
             %>
             <div class="product-card bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                <a href="product-detail.jsp?id=<%= p.getProductId() %>">
+                <a href="single-product?id=<%= p.getProductId() %>">
                     <div class="relative overflow-hidden bg-gray-50 h-48 flex items-center justify-center">
                         <% if (!imageSrc.isEmpty()) { %>
-                        <!-- Image එක මෙතනින් Load වෙයි -->
                         <img src="<%= imageSrc %>" alt="<%= p.getProductName() %>" class="object-cover h-full w-full" />
                         <% } else { %>
-                        <!-- Image එකක් නැත්නම් මේක පෙන්වයි -->
                         <div class="product-img w-28 h-28 bg-gradient-to-br from-brand-100 to-brand-200 rounded-xl flex items-center justify-center">
                             <svg class="w-14 h-14 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/>
@@ -151,7 +145,7 @@
                     <p class="text-xs text-brand-600 font-medium mb-1 uppercase tracking-wide">
                         <%= p.getCategory() != null ? p.getCategory().getName() : "TechMart" %>
                     </p>
-                    <a href="product-detail.jsp?id=<%= p.getProductId() %>">
+                    <a href="single-product?id=<%= p.getProductId() %>">
                         <h3 class="text-sm font-semibold text-gray-900 hover:text-brand-600 transition-colors mb-2 line-clamp-2"><%= p.getProductName() %></h3>
                     </a>
 
@@ -185,7 +179,6 @@
             %>
         </div>
 
-        <!-- Load More -->
         <div class="text-center mt-10">
             <button class="border-2 border-brand-600 text-brand-600 font-semibold px-8 py-3 rounded-lg hover:bg-brand-600 hover:text-white transition-all duration-200">
                 Load More Products
