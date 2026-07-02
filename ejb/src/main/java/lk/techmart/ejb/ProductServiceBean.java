@@ -1,5 +1,6 @@
 package lk.techmart.ejb;
 
+import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -21,6 +22,9 @@ public class ProductServiceBean implements ProductService {
 
     @PersistenceContext(unitName = "techmartPU")
     private EntityManager em;
+
+    @EJB
+    private NotificationServiceBean notificationService;
 
     @Override
     public void addProduct(ProductDTO dto) {

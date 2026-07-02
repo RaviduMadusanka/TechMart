@@ -44,20 +44,34 @@
     "country": data.country
 };
 
-    payhere.onCompleted = function onCompleted(orderId) {
-        console.log("Payment completed. OrderID:" + orderId);
+        payhere.onCompleted = function onCompleted(orderId) {
 
-        fetch('cart-action?action=clear&redirect=success&orderId=' + orderId)
-            .then(() => {
-                window.location.href = "order-success?orderId=" + orderId;
-            })
-            .catch(err => {
-                window.location.href = "order-success?orderId=" + orderId;
+            Swal.fire({
+                title: 'Payment Successful!',
+                html: '<strong>Order ID: ORD-' + orderId + ' is now Processing.Payment Success</strong>',
+                icon: 'success',
+                confirmButtonText: 'View Order',
+                confirmButtonColor: '#3085d6',
+                timer: 4000,
+                timerProgressBar: true
+            }).then((result) => {
+                fetch('cart-action?action=clear&redirect=success&orderId=' + orderId)
+                    .then(() => {
+                        window.location.href = "order-success?orderId=" + orderId;
+                    })
+                    .catch(err => {
+                        console.error('Cart clear error:', err);
+                        window.location.href = "order-success?orderId=" + orderId;
+                    });
             });
-};
+        };
     payhere.onDismissed = function onDismissed() {
-    console.log("Payment dismissed");
-    submitBtn.innerHTML = "🔒 Place Order";
+        fetch('PayHereNotifyServlet?orderId=' + document.querySelector('input[name="order_id"]').value)
+            .then(response => {
+                console.log("Order status updated to CANCELLED in DB");
+            })
+            .catch(error => console.error('Error updating status:', error));
+    submitBtn.innerHTML = "Place Order";
     submitBtn.disabled = false;
 };
 

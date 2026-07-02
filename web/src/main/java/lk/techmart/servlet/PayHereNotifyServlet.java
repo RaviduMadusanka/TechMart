@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lk.techmart.core.service.OrderService;
+import lk.techmart.ejb.NotificationServiceBean;
 import lk.techmart.ejb.ShoppingCartBean;
 
 import java.io.IOException;
@@ -22,6 +23,9 @@ public class PayHereNotifyServlet extends HttpServlet {
     @EJB
     private OrderService orderService;
 
+    @EJB
+    private NotificationServiceBean  notificationService;
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -32,8 +36,6 @@ public class PayHereNotifyServlet extends HttpServlet {
             String payhereCurrency = request.getParameter("payhere_currency");
             String statusCode = request.getParameter("status_code");
             String md5sig = request.getParameter("md5sig");
-
-            System.out.println("Notify received: " + orderId);
 
             String merchantSecret = "Mzk4NjcxODE0MTQyMjU4MzA3NzkzNDY2NTE4ODUwMTk2NDE5OTUwOQ==";
 
@@ -47,11 +49,12 @@ public class PayHereNotifyServlet extends HttpServlet {
                 if ("2".equals(statusCode)) {
 
                     orderService.processPaymentSuccess(parsedOrderId);
-                    System.out.println("Payment Success for Order ID: " + orderId + ". Stock reduced and Cart cleared!");
 
                 } else if ("-2".equals(statusCode) || "-1".equals(statusCode) || "-3".equals(statusCode)) {
-                    orderService.updateOrderStatus(parsedOrderId, "CANCELLED");
-                    System.out.println("Payment Failed/Cancelled for Order ID: " + orderId);
+                    orderService.updateOrderStatus(parsedOrderId, "Cancelled");
+
+                    Long customerId = orderService.getCustomerIdByOrderId(parsedOrderId);
+                    notificationService.sendOrderNotification(customerId, "ORD-" + parsedOrderId, "CANCELLED");
                 }
             }
 

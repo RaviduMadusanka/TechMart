@@ -196,6 +196,7 @@
         </form>
     </div>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript" src="https://www.payhere.lk/lib/payhere.js"></script>
 <script src="${pageContext.request.contextPath}/js/checkout.js"></script>
 

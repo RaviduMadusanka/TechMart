@@ -24,6 +24,9 @@ public class OrderServiceBean implements OrderService {
     @EJB
     private InventoryService inventoryService;
 
+    @EJB
+    private NotificationServiceBean notificationService;
+
     @Override
     public List<OrderDTO> getAllOrders() {
         List<Orders> ordersList = em.createQuery("SELECT o FROM Orders o ORDER BY o.orderId DESC", Orders.class).getResultList();
@@ -108,6 +111,9 @@ public class OrderServiceBean implements OrderService {
             order.setOrderStatus(statusObj);
             em.merge(order);
             em.flush();
+
+            notificationService.sendOrderNotification(order.getCustomer().getCustomerId(),"ORD-" + orderId, newStatus);
+
             return true;
 
         } catch (Exception e) {
@@ -179,16 +185,22 @@ public class OrderServiceBean implements OrderService {
         em.merge(order);
         em.flush();
 
+
+
         return order.getOrderId();
     }
 
     @Override
     public boolean processPaymentSuccess(Long orderId) {
+
         try {
             Orders order = em.find(Orders.class, orderId);
             if (order == null) {
-                System.out.println("Order not found!");
                 return false;
+            }
+
+            if ("Processing".equals(order.getOrderStatus().getStatusName())) {
+                return true;
             }
 
             OrderStatus paidStatus = em.createQuery("SELECT s FROM OrderStatus s WHERE s.statusName = 'Processing'", OrderStatus.class).getSingleResult();
@@ -208,6 +220,14 @@ public class OrderServiceBean implements OrderService {
 
                     inventory.setQuantity(inventory.getQuantity() - purchasedQty);
                     em.merge(inventory);
+
+                    int currentQty = inventory.getQuantity();
+                    int reorderLevel = inventory.getReorderLevel() != null ? inventory.getReorderLevel() : 10;
+
+                    if (currentQty <= reorderLevel) {
+                        notificationService.sendInventoryAlert(item.getProduct().getProductName(), currentQty, reorderLevel);
+                    }
+
                 } catch (Exception e) {
                     System.out.println("Could not update inventory for Product ID: " + productId);
                 }
@@ -217,19 +237,28 @@ public class OrderServiceBean implements OrderService {
                 Long customerId = order.getCustomer().getCustomerId();
                 String deleteQuery = "DELETE FROM cart_items WHERE cart_id = (SELECT cart_id FROM shopping_cart WHERE customer_id = ?)";
                 int deletedCount = em.createNativeQuery(deleteQuery).setParameter(1, customerId).executeUpdate();
-                System.out.println("Successfully deleted " + deletedCount + " items from cart_items table.");
             } catch (Exception e) {
                 System.out.println("Error deleting from cart_items: " + e.getMessage());
             }
 
             em.merge(order);
             em.flush();
+
+            notificationService.sendOrderNotification(order.getCustomer().getCustomerId(),"ORD-" + orderId, "Payment Successful / Processing");
+            notificationService.sendEmailDirectAsync(order.getCustomer().getEmail(),
+                    "Payment for your order ORD-" + orderId + " was successful. We are processing it now!");
             return true;
 
         } catch (Exception e) {
             System.out.println("Error in processing payment success: " + e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public Long getCustomerIdByOrderId(Long orderId) {
+        Orders order = em.find(Orders.class, orderId);
+        return (order != null) ? order.getCustomer().getCustomerId() : null;
     }
 
 

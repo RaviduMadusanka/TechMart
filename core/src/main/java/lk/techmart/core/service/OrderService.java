@@ -14,5 +14,6 @@ public interface OrderService {
     List<String> getAllOrderStatuses();
     Long placeOrder(Long customerId, Map<Long, Integer> cartItems,String address) throws Exception;
     boolean processPaymentSuccess(Long orderId);
+    Long getCustomerIdByOrderId(Long orderId);
 
 }
