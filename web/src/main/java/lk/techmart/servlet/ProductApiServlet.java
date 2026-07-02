@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lk.techmart.core.dto.BrandDTO;
 import lk.techmart.core.dto.CategoryDTO;
 import lk.techmart.core.dto.ProductDTO;
+import lk.techmart.core.dto.WarehousesDTO;
 import lk.techmart.core.service.ProductService;
 
 import java.io.IOException;
@@ -61,6 +62,17 @@ public class ProductApiServlet extends HttpServlet {
                 String jsonString = gson.toJson(products);
 
                 resp.getWriter().write(jsonString);
+            }else if ("get_warehouses".equals(action)) {
+                List<WarehousesDTO> warehouses = productService.getAllWarehouses();
+                JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+
+                for (WarehousesDTO w : warehouses) {
+                    arrayBuilder.add(Json.createObjectBuilder()
+                            .add("warehouseId", w.getWarehouseId())
+                            .add("warehouseName", w.getWarehouseName()));
+                }
+                resp.getWriter().write(arrayBuilder.build().toString());
+
             }
         } catch (Exception e) {
             e.printStackTrace();

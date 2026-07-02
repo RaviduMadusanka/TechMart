@@ -11,6 +11,7 @@ import jakarta.servlet.http.Part;
 import lk.techmart.core.dto.BrandDTO;
 import lk.techmart.core.dto.CategoryDTO;
 import lk.techmart.core.dto.ProductDTO;
+import lk.techmart.core.dto.WarehousesDTO;
 import lk.techmart.core.entity.Brand;
 import lk.techmart.core.entity.Category;
 import lk.techmart.core.service.ProductService;
@@ -77,6 +78,18 @@ public class ProductServlet extends HttpServlet {
                 BrandDTO brand = new BrandDTO();
                 brand.setBrandId(Long.parseLong(brandId));
                 dto.setBrand(brand);
+            }
+
+            String warehousId = req.getParameter("warehouseId");
+            if (warehousId != null && !warehousId.isEmpty()) {
+                WarehousesDTO warehouse = new WarehousesDTO();
+                warehouse.setWarehouseId(Long.parseLong(warehousId));
+                dto.setWarehouse(warehouse);
+            }
+
+            String quantityStr = req.getParameter("quantity");
+            if (quantityStr != null && !quantityStr.isEmpty()) {
+                dto.setQuantity(Integer.parseInt(quantityStr));
             }
 
             String statusIdStr = req.getParameter("statusId");

@@ -18,6 +18,8 @@ public class ProductDTO {
     private String imageUrl;
     private BigDecimal weight;
     private String status;
+    private Integer quantity;
+    private WarehousesDTO warehouse;
 
     public ProductDTO() {
     }
@@ -108,5 +110,21 @@ public class ProductDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public WarehousesDTO getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(WarehousesDTO warehouse) {
+        this.warehouse = warehouse;
     }
 }

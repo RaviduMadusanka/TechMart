@@ -150,6 +150,30 @@
                         </select>
                     </div>
 
+                    <!-- Inventory Details Section -->
+                    <div id="inventorySectionContainer" class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 mt-2 pt-4 border-t border-slate-100">
+                        <div class="col-span-2">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Inventory Details</h4>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Initial Quantity *</label>
+                            <input type="number" id="qtyInput" name="quantity" required min="0" class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 font-mono" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Select Warehouse *</label>
+                            <div class="relative">
+                                <select id="warehouseSelect" name="warehouseId" required class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 appearance-none">
+                                    <option value="">Loading Warehouses...</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

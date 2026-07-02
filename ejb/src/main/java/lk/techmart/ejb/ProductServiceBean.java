@@ -7,11 +7,9 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lk.techmart.core.dto.BrandDTO;
 import lk.techmart.core.dto.CategoryDTO;
-import lk.techmart.core.entity.Brand;
-import lk.techmart.core.entity.Category;
-import lk.techmart.core.entity.Product;
+import lk.techmart.core.dto.WarehousesDTO;
+import lk.techmart.core.entity.*;
 import lk.techmart.core.dto.ProductDTO;
-import lk.techmart.core.entity.Status;
 import lk.techmart.core.service.ProductService;
 
 import java.util.ArrayList;
@@ -53,6 +51,21 @@ public class ProductServiceBean implements ProductService {
 
         em.persist(entity);
         em.flush();
+
+        if (dto.getQuantity() != null && dto.getWarehouse() != null) {
+            Inventory inventory = new Inventory();
+            inventory.setProduct(entity);
+
+            Warehouse warehouse = em.find(Warehouse.class, dto.getWarehouse().getWarehouseId());
+            if (warehouse != null) {
+                inventory.setWarehouse(warehouse);
+            }
+
+            inventory.setQuantity(dto.getQuantity());
+            inventory.setReorderLevel(20);
+
+            em.persist(inventory);
+        }
     }
 
     @Override
@@ -181,6 +194,20 @@ public class ProductServiceBean implements ProductService {
             BrandDTO dto = new BrandDTO();
             dto.setBrandId(b.getBrandId());
             dto.setName(b.getName());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @Override
+    public List<WarehousesDTO> getAllWarehouses() {
+        List<Warehouses> warehouse = em.createQuery("SELECT w FROM Warehouses w", Warehouses.class).getResultList();
+        List<WarehousesDTO> dtos = new ArrayList<>();
+        for(Warehouses w : warehouse) {
+            WarehousesDTO dto = new WarehousesDTO();
+            dto.setWarehouseId(w.getWarehouseId());
+            dto.setWarehouseName(w.getWarehouseName());
+            dto.setLocation(w.getLocation());
             dtos.add(dto);
         }
         return dtos;

@@ -10,13 +10,11 @@ public class Inventory {
     @Column(name = "inventory_id")
     private Long inventoryId;
 
-    // FK -> warehouses
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "warehouse_id", nullable = false)
     private Warehouse warehouse;
 
-    // FK -> products table (assume Product entity exists)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 

@@ -12,7 +12,7 @@ let allProductsList = [];
 let currentPage = 1;
 const itemsPerPage = 5;
 
-function loadDropdowns(selectedCategoryId = '', selectedBrandId = '') {
+function loadDropdowns(selectedCategoryId = '', selectedBrandId = '',selectedWarehouseId='') {
     fetch(CONTEXT_PATH + '/api/products?action=get_categories')
         .then(response => response.json())
         .then(data => {
@@ -46,6 +46,23 @@ function loadDropdowns(selectedCategoryId = '', selectedBrandId = '') {
             }
         })
         .catch(err => console.error("Error loading brands", err));
+
+    fetch(CONTEXT_PATH + '/api/products?action=get_warehouses')
+        .then(response => response.json())
+        .then(data => {
+            const warehousesSelect = document.getElementById('warehouseSelect');
+            if(warehousesSelect) {
+                warehousesSelect.innerHTML = '<option value="">Loading Warehouses...</option>';
+                data.forEach(warehouses => {
+                    const option = document.createElement('option');
+                    option.value = warehouses.warehouseId;
+                    option.text = warehouses.warehouseName;
+                    if(warehouses.warehouseId == selectedWarehouseId) option.selected = true;
+                    warehousesSelect.appendChild(option);
+                });
+            }
+        })
+        .catch(err => console.error("Error loading warehpuse", err));
 }
 
 function loadProducts() {
@@ -247,6 +264,9 @@ function openAddProductModal() {
     document.getElementById('imageHelpText').classList.add('hidden');
 
     addProductForm.reset();
+    document.getElementById('inventorySectionContainer').classList.remove('hidden');
+    document.getElementById('qtyInput').required = true;
+    document.getElementById('warehouseSelect').required = true;
     loadDropdowns();
 
     modal.classList.remove('hidden');
@@ -275,6 +295,10 @@ function openUpdateProductModal(id, name, desc, price, cost, weight, catId, bran
 
     document.getElementById('primaryImage').required = false;
     document.getElementById('imageHelpText').classList.remove('hidden');
+
+    document.getElementById('inventorySectionContainer').classList.add('hidden');
+    document.getElementById('qtyInput').required = false;
+    document.getElementById('warehouseSelect').required = false;
 
     loadDropdowns(catId, brandId);
 
