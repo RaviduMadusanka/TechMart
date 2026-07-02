@@ -6,6 +6,7 @@ import jakarta.ejb.Asynchronous;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.jms.JMSContext;
+import jakarta.jms.MapMessage;
 import jakarta.jms.Queue;
 import jakarta.jms.Topic;
 
@@ -24,6 +25,8 @@ import jakarta.persistence.PersistenceContext;
 import lk.techmart.core.entity.Notification;
 
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Stateless
 public class NotificationServiceBean {
@@ -40,24 +43,26 @@ public class NotificationServiceBean {
     @PersistenceContext(unitName = "techmartPU")
     private EntityManager em;
 
+    private static final Logger LOG =
+            Logger.getLogger(NotificationServiceBean.class.getName());
+
     public void sendOrderNotification(Long customerId, String orderId, String status) {
+
         try {
-            jakarta.jms.MapMessage mapMessage = jmsContext.createMapMessage();
+            MapMessage mapMessage = jmsContext.createMapMessage();
             mapMessage.setLong("customerId", customerId);
             mapMessage.setString("orderId", orderId);
             mapMessage.setString("message", "Order ID: " + orderId + " is now " + status);
 
             jmsContext.createProducer().send(orderQueue, mapMessage);
-            System.out.println("[Producer] MapMessage sent to OrderQueue for Customer: " + customerId);
         } catch (Exception e) {
-            e.printStackTrace();
+//            LOG.log(Level.SEVERE, "Failed to send JMS notification", e);
         }
     }
 
     public void sendInventoryAlert(String productName, int currentQty, int reorderLevel) {
         String alert = "ALERT: Product '" + productName + "' stock is low! Current: " + currentQty + ", Reorder Level: " + reorderLevel;
         jmsContext.createProducer().send(inventoryTopic, alert);
-        System.out.println("[Producer] Alert sent to InventoryTopic: " + alert);
     }
 
     @Asynchronous
@@ -90,7 +95,6 @@ public class NotificationServiceBean {
             return new AsyncResult<>(true);
 
         } catch (Exception e) {
-            e.printStackTrace();
             return new AsyncResult<>(false);
         }
     }
@@ -125,7 +129,6 @@ public class NotificationServiceBean {
             return new AsyncResult<>(true);
 
         } catch (Exception e) {
-            e.printStackTrace();
             return new AsyncResult<>(false);
         }
 
@@ -138,7 +141,6 @@ public class NotificationServiceBean {
                     .setMaxResults(1)
                     .getSingleResult();
         } catch (Exception e) {
-            System.out.println("DEBUG: Error trying to find notification for order " + orderId + ": " + e.getMessage());
             return null;
         }
     }

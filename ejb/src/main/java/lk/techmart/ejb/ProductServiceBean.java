@@ -155,7 +155,7 @@ public class ProductServiceBean implements ProductService {
             }
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
+
             return false;
         }
     }

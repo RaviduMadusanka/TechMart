@@ -70,7 +70,7 @@ public class InventoryServiceBean implements InventoryService {
     @Override
     public int getLowStockCount(int threshold) {
         int count = 0;
-        for (Integer qty : stockMemory.values()) {
+        for (Integer qty : stockMap.values()) {
             if (qty < threshold) count++;
         }
         return count;
