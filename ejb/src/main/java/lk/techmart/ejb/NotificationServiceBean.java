@@ -62,7 +62,6 @@ public class NotificationServiceBean {
 
     @Asynchronous
     public Future<Boolean> sendEmailDirectAsync(String toEmail, String content) {
-        System.out.println("[Async] Starting real email sending to " + toEmail + "...");
 
         final String fromEmail = "ravidumadusanka338@gmail.com";
         final String password = "k a e t a w e t s k k w a t j l";
@@ -88,15 +87,48 @@ public class NotificationServiceBean {
             message.setText(content);
 
             Transport.send(message);
-
-            System.out.println("[Async] Real Email sent successfully to " + toEmail + "!");
             return new AsyncResult<>(true);
 
         } catch (Exception e) {
-            System.err.println("[Async] Error sending email: " + e.getMessage());
             e.printStackTrace();
             return new AsyncResult<>(false);
         }
+    }
+
+    @Asynchronous
+    public Future<Boolean> sendEmailDirectAsync(String toEmail, String content,String subject) {
+
+        final String fromEmail = "ravidumadusanka338@gmail.com";
+        final String password = "k a e t a w e t s k k w a t j l";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(fromEmail));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject(subject);
+            message.setText(content);
+
+            Transport.send(message);
+            return new AsyncResult<>(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new AsyncResult<>(false);
+        }
+
     }
 
     public String getLatestNotification(Long orderId) {

@@ -1,6 +1,6 @@
 package lk.techmart.core.service;
 
-import javax.ejb.Local;
+import jakarta.ejb.Local;
 
 @Local
 public interface InventoryService {

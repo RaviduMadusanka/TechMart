@@ -24,6 +24,10 @@ public class Inventory {
     @Column(name = "reorder_level")
     private Integer reorderLevel = 10;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Long getInventoryId() {
         return inventoryId;
     }
@@ -62,5 +66,13 @@ public class Inventory {
 
     public void setReorderLevel(Integer reorderLevel) {
         this.reorderLevel = reorderLevel;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

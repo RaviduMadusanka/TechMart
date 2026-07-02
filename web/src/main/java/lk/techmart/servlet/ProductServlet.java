@@ -36,6 +36,8 @@ public class ProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
+
+            Long userId = (Long) req.getSession().getAttribute("userId");
             String action = req.getParameter("action");
             ProductDTO dto = new ProductDTO();
             String productCode = "";
@@ -108,7 +110,7 @@ public class ProductServlet extends HttpServlet {
                 productService.updateProduct(dto);
                 resp.getWriter().write("Product updated successfully!");
             } else {
-                productService.addProduct(dto);
+                productService.addProduct(dto,userId);
                 resp.getWriter().write("Product added successfully!");
             }
 

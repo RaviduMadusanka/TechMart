@@ -5,11 +5,8 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import lk.techmart.core.dto.BrandDTO;
-import lk.techmart.core.dto.CategoryDTO;
-import lk.techmart.core.dto.WarehousesDTO;
+import lk.techmart.core.dto.*;
 import lk.techmart.core.entity.*;
-import lk.techmart.core.dto.ProductDTO;
 import lk.techmart.core.service.ProductService;
 
 import java.util.ArrayList;
@@ -25,7 +22,7 @@ public class ProductServiceBean implements ProductService {
     private NotificationServiceBean notificationService;
 
     @Override
-    public void addProduct(ProductDTO dto) {
+    public void addProduct(ProductDTO dto,Long userId) {
         Product entity = new Product();
         entity.setProductCode(dto.getProductCode());
         entity.setProductName(dto.getProductName());
@@ -59,6 +56,11 @@ public class ProductServiceBean implements ProductService {
             Warehouse warehouse = em.find(Warehouse.class, dto.getWarehouse().getWarehouseId());
             if (warehouse != null) {
                 inventory.setWarehouse(warehouse);
+            }
+
+            User user = em.find(User.class, userId);
+            if (user != null) {
+                inventory.setUser(user);
             }
 
             inventory.setQuantity(dto.getQuantity());
@@ -139,6 +141,26 @@ public class ProductServiceBean implements ProductService {
     }
 
     @Override
+    public boolean updateInventoryQuantity(Long inventoryId, Integer newQuantity,Long userId) {
+        try {
+            Inventory inv = em.find(Inventory.class, inventoryId);
+            User user = em.find(User.class, userId);
+
+            if (inv != null) {
+                inv.setQuantity(newQuantity);
+                inv.setUser(user);
+                em.merge(inv);
+                em.flush();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public List<ProductDTO> getAllProducts() {
         List<Product> entities = em.createQuery("SELECT p FROM Product p", Product.class).getResultList();
         List<ProductDTO> dtos = new ArrayList<>();
@@ -208,6 +230,46 @@ public class ProductServiceBean implements ProductService {
             dto.setWarehouseId(w.getWarehouseId());
             dto.setWarehouseName(w.getWarehouseName());
             dto.setLocation(w.getLocation());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @Override
+    public List<InventoryDTO> getAllInventory() {
+        List<Inventory> inventories = em.createQuery("SELECT i FROM Inventory i", Inventory.class).getResultList();
+        List<InventoryDTO> dtos = new ArrayList<>();
+
+        for(Inventory i : inventories) {
+            InventoryDTO dto = new InventoryDTO();
+            dto.setInventoryId(i.getInventoryId());
+            dto.setQuantity(i.getQuantity());
+            dto.setReorderLevel(i.getReorderLevel());
+
+            if (i.getProduct() != null) {
+                Product p = i.getProduct();
+                ProductDTO pDto = new ProductDTO();
+                pDto.setProductId(p.getProductId());
+                pDto.setProductName(p.getProductName());
+                pDto.setProductCode(p.getProductCode());
+                pDto.setPrice(p.getPrice());
+                pDto.setImageUrl(p.getImageUrl());
+
+                if (p.getBrand() != null) {
+                    BrandDTO bDto = new BrandDTO();
+                    bDto.setName(p.getBrand().getName());
+                    pDto.setBrand(bDto);
+                }
+
+                if (p.getCategory() != null) {
+                    CategoryDTO cDto = new CategoryDTO();
+                    cDto.setName(p.getCategory().getName());
+                    pDto.setCategory(cDto);
+                }
+
+                pDto.setStatus(p.getStatus() != null ? p.getStatus().getStatusName() : "ACTIVE");
+                dto.setProduct(pDto);
+            }
             dtos.add(dto);
         }
         return dtos;
