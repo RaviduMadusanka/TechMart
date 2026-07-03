@@ -50,7 +50,7 @@
                 </h1>
                 <p class="text-blue-100 text-lg mb-8 max-w-md">Discover the latest laptops, smartphones, and accessories. Free delivery on orders above $50.</p>
                 <div class="flex gap-4 flex-wrap">
-                    <a href="#products" class="bg-white text-brand-700 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors shadow-lg">
+                    <a href="advance-search" class="bg-white text-brand-700 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors shadow-lg">
                         Shop Now →
                     </a>
                     <a href="#" class="border border-white/50 text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors">

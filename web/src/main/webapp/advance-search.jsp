@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.ArrayList"%>
+<%@ page import="java.util.List, java.util.ArrayList, java.util.Arrays"%>
 <%
     request.setAttribute("pageTitle", "Advanced Search - TechMart");
 
@@ -10,6 +10,22 @@
     List<lk.techmart.core.dto.ProductDTO> productsList = (List<lk.techmart.core.dto.ProductDTO>) request.getAttribute("productsList");
     Integer resultCount = (Integer) request.getAttribute("resultCount");
     if (resultCount == null) resultCount = 0;
+
+    Integer currentPage = (Integer) request.getAttribute("currentPage");
+    if (currentPage == null) currentPage = 1;
+    Integer totalPages = (Integer) request.getAttribute("totalPages");
+    if (totalPages == null) totalPages = 1;
+%>
+<%
+    // Database එකෙන් එන ලිස්ට්
+    List<lk.techmart.core.dto.CategoryDTO> dbCategories = (List<lk.techmart.core.dto.CategoryDTO>) request.getAttribute("dbCategories");
+    List<lk.techmart.core.dto.BrandDTO> dbBrands = (List<lk.techmart.core.dto.BrandDTO>) request.getAttribute("dbBrands");
+
+    // User තෝරපු ටික් ටික ලිස්ට් එකක් විදිහට ගන්නවා (ලේසියෙන් check කරන්න පුළුවන් වෙන්න)
+    String[] selectedCatsArr = (String[]) request.getAttribute("selectedCategories");
+    String[] selectedBrandsArr = (String[]) request.getAttribute("selectedBrands");
+    List<String> selectedCats = selectedCatsArr != null ? Arrays.asList(selectedCatsArr) : new ArrayList<>();
+    List<String> selectedBrandsList = selectedBrandsArr != null ? Arrays.asList(selectedBrandsArr) : new ArrayList<>();
 %>
 <%@ include file="WEB-INF/includes/header.jsp" %>
 
@@ -24,7 +40,10 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        <form action="${pageContext.request.contextPath}/advance-search" method="get" class="mb-8">
+        <form id="searchForm" action="${pageContext.request.contextPath}/advance-search" method="get" class="mb-8">
+
+            <input type="hidden" name="page" id="pageInput" value="1">
+
             <div class="relative">
                 <input type="text" name="keyword" value="<%= keyword %>" placeholder="Search by product name, brand, model, SKU..."
                        class="w-full pl-12 pr-32 py-4 border border-gray-300 rounded-xl text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white"/>
@@ -48,26 +67,38 @@
                         <div class="border-t border-gray-100 pt-5">
                             <h3 class="text-sm font-semibold text-gray-800 mb-3">Category</h3>
                             <div class="space-y-2 text-sm text-gray-600">
-                                <% String[] categories = {"Laptops", "Smartphones", "Tablets", "Audio", "Accessories", "Monitors"}; %>
-                                <% for (String cat : categories) { %>
+                                <%
+                                    if (dbCategories != null) {
+                                        for (lk.techmart.core.dto.CategoryDTO cat : dbCategories) {
+                                            String isChecked = selectedCats.contains(cat.getName()) ? "checked" : "";
+                                %>
                                 <label class="flex items-center gap-2 cursor-pointer hover:text-brand-600">
-                                    <input type="checkbox" name="category" value="<%= cat %>" class="w-4 h-4 rounded accent-brand-600"/>
-                                    <%= cat %>
+                                    <input type="checkbox" name="category" value="<%= cat.getName() %>" <%= isChecked %> class="w-4 h-4 rounded accent-brand-600"/>
+                                    <%= cat.getName() %>
                                 </label>
-                                <% } %>
+                                <%
+                                        }
+                                    }
+                                %>
                             </div>
                         </div>
 
                         <div class="border-t border-gray-100 pt-5">
                             <h3 class="text-sm font-semibold text-gray-800 mb-3">Brand</h3>
                             <div class="space-y-2 text-sm text-gray-600">
-                                <% String[] brands = {"Apple", "Samsung", "Dell", "Sony", "LG", "Google"}; %>
-                                <% for (String brand : brands) { %>
+                                <%
+                                    if (dbBrands != null) {
+                                        for (lk.techmart.core.dto.BrandDTO brand : dbBrands) {
+                                            String isChecked = selectedBrandsList.contains(brand.getName()) ? "checked" : "";
+                                %>
                                 <label class="flex items-center gap-2 cursor-pointer hover:text-brand-600">
-                                    <input type="checkbox" name="brand" value="<%= brand %>" class="w-4 h-4 rounded accent-brand-600"/>
-                                    <%= brand %>
+                                    <input type="checkbox" name="brand" value="<%= brand.getName() %>" <%= isChecked %> class="w-4 h-4 rounded accent-brand-600"/>
+                                    <%= brand.getName() %>
                                 </label>
-                                <% } %>
+                                <%
+                                        }
+                                    }
+                                %>
                             </div>
                         </div>
 
@@ -91,7 +122,7 @@
                             <h2 class="text-lg font-bold text-gray-900">Search Results</h2>
                             <p class="text-gray-500 text-sm mt-0.5">Showing <%= resultCount %> products<% if (!keyword.isEmpty()) { %> for "<%= keyword %>"<% } %></p>
                         </div>
-                        <select name="sort" onchange="this.form.submit()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+                        <select name="sort" onchange="document.getElementById('pageInput').value=1; this.form.submit();" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
                             <option value="">Sort: Relevance</option>
                             <option value="Price: Low to High">Price: Low to High</option>
                             <option value="Price: High to Low">Price: High to Low</option>
@@ -107,7 +138,7 @@
                                     String imageSrc = (p.getImageUrl() != null && !p.getImageUrl().trim().isEmpty())
                                             ? request.getContextPath() + "/image?file=" + p.getImageUrl() : "";
                                     String catName = (p.getCategory() != null && p.getCategory().getName() != null)
-                                            ? p.getCategory().getName() : "TechMart";;
+                                            ? p.getCategory().getName() : "TechMart";
                         %>
                         <div class="product-card bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
                             <a href="product-detail.jsp?id=<%= p.getProductId() %>">
@@ -150,6 +181,31 @@
                             }
                         %>
                     </div>
+
+                    <% if (totalPages > 1) { %>
+                    <div class="flex items-center justify-center gap-2 mt-10">
+                        <% if (currentPage > 1) { %>
+                        <button type="button" onclick="goToPage(<%= currentPage - 1 %>)" class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50">‹</button>
+                        <% } %>
+
+                        <% for (int i = 1; i <= totalPages; i++) { %>
+                        <button type="button" onclick="goToPage(<%= i %>)" class="w-9 h-9 flex items-center justify-center rounded-lg <%= i == currentPage ? "bg-brand-600 text-white font-semibold border-brand-600" : "border border-gray-300 text-gray-600 hover:bg-gray-50" %>">
+                            <%= i %>
+                        </button>
+                        <% } %>
+
+                        <% if (currentPage < totalPages) { %>
+                        <button type="button" onclick="goToPage(<%= currentPage + 1 %>)" class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50">›</button>
+                        <% } %>
+                    </div>
+
+                    <script>
+                        function goToPage(pageNum) {
+                            document.getElementById('pageInput').value = pageNum;
+                            document.getElementById('searchForm').submit();
+                        }
+                    </script>
+                    <% } %>
 
                 </section>
             </div>

@@ -2,12 +2,15 @@ package lk.techmart.ejb;
 
 import jakarta.ejb.Remove;
 import jakarta.ejb.Stateful;
+import jakarta.interceptor.Interceptors;
+import lk.techmart.ejb.interceptor.PerformanceInterceptor;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 @Stateful
+@Interceptors(PerformanceInterceptor.class)
 public class ShoppingCartBean implements Serializable {
 
     private Map<Long, Integer> cart = new HashMap<>();

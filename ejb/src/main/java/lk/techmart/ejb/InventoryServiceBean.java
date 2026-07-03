@@ -5,11 +5,13 @@ import jakarta.ejb.Lock;
 import jakarta.ejb.LockType;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lk.techmart.core.entity.Inventory;
 import lk.techmart.core.entity.Product;
 import lk.techmart.core.service.InventoryService;
+import lk.techmart.ejb.interceptor.PerformanceInterceptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 @Startup
+@Interceptors(PerformanceInterceptor.class)
 public class InventoryServiceBean implements InventoryService {
 
     private Map<Long, Integer> stockMap;

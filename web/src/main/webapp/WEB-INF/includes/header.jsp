@@ -114,15 +114,16 @@
                         </li>
                         <li><hr class="dropdown-divider mt-0"></li>
                         <li>
-                            <a class="dropdown-item py-2" href="profile.jsp">
+                            <a class="dropdown-item py-2" href="${pageContext.request.contextPath}/profile">
                                 👤 My Profile
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item py-2" href="orders.jsp">
+                            <a class="dropdown-item py-2" href="orderHistory.jsp">
                                 📦 Orders
                             </a>
                         </li>
+
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger py-2 font-medium" href="auth?action=logout">

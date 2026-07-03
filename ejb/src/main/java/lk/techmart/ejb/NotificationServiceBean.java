@@ -56,7 +56,7 @@ public class NotificationServiceBean {
 
             jmsContext.createProducer().send(orderQueue, mapMessage);
         } catch (Exception e) {
-//            LOG.log(Level.SEVERE, "Failed to send JMS notification", e);
+            LOG.log(Level.SEVERE, "Failed to send JMS notification", e);
         }
     }
 

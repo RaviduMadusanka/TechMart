@@ -107,6 +107,7 @@ public class AuthServlet extends HttpServlet {
                 session.setAttribute("loggedUserEmail", customer.getEmail());
                 session.setAttribute("loggedUserName", customer.getFirstName() + " " + customer.getLastName());
                 session.setAttribute("userRole", "CUSTOMER");
+                session.setAttribute("customer", customer);
 
                 try {
                     ShoppingCartBean cartBean = (ShoppingCartBean) session.getAttribute("shoppingCart");

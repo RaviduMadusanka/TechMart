@@ -6,6 +6,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lk.techmart.core.dto.BrandDTO;
+import lk.techmart.core.dto.CategoryDTO;
 import lk.techmart.core.dto.ProductDTO;
 import lk.techmart.core.service.SearchService;
 
@@ -25,6 +27,9 @@ public class AdvanceSearchServlet extends HttpServlet {
         String minPriceStr = request.getParameter("minPrice");
         String maxPriceStr = request.getParameter("maxPrice");
         String sort = request.getParameter("sort");
+        String pageStr = request.getParameter("page");
+        int currentPage = 1;
+        int pageSize = 8;
 
         String[] categories = request.getParameterValues("category");
         String[] brands = request.getParameterValues("brand");
@@ -33,15 +38,49 @@ public class AdvanceSearchServlet extends HttpServlet {
         Double maxPrice = null;
 
         try {
-            if (minPriceStr != null && !minPriceStr.isEmpty()) minPrice = Double.parseDouble(minPriceStr);
-            if (maxPriceStr != null && !maxPriceStr.isEmpty()) maxPrice = Double.parseDouble(maxPriceStr);
+            if (minPriceStr != null && !minPriceStr.isEmpty()) {
+                minPrice = Double.parseDouble(minPriceStr);
+            }
+            if (maxPriceStr != null && !maxPriceStr.isEmpty()) {
+                maxPrice = Double.parseDouble(maxPriceStr);
+            }
+            if (pageStr != null && !pageStr.isEmpty()) {
+                try {
+                    currentPage = Integer.parseInt(pageStr);
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
         } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
 
-        List<ProductDTO> searchResults = searchService.advancedSearch(keyword, categories, brands, minPrice, maxPrice, sort);
+        long totalProducts = searchService.getAdvancedSearchCount(keyword, categories, brands, minPrice, maxPrice);
+
+        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+        if (totalPages == 0) totalPages = 1;
+
+        int offset = (currentPage - 1) * pageSize;
+        List<ProductDTO> searchResults = searchService.advancedSearch(keyword, categories, brands, minPrice, maxPrice, sort, offset, pageSize);
 
         request.setAttribute("productsList", searchResults);
-        request.setAttribute("resultCount", searchResults != null ? searchResults.size() : 0);
+        request.setAttribute("resultCount", (int) totalProducts);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPages", totalPages);
+
+        List<CategoryDTO> dbCategories = searchService.getAllCategories();
+        List<BrandDTO> dbBrands = searchService.getAllBrands();
+
+        request.setAttribute("dbCategories", dbCategories);
+        request.setAttribute("dbBrands", dbBrands);
+
+        request.setAttribute("selectedCategories", categories);
+        request.setAttribute("selectedBrands", brands);
+
+        request.setAttribute("productsList", searchResults);
+        request.setAttribute("resultCount", (int) totalProducts);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPages", totalPages);
 
         request.getRequestDispatcher("/advance-search.jsp").forward(request, response);
     }

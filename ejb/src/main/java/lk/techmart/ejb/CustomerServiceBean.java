@@ -1,6 +1,7 @@
 package lk.techmart.ejb;
 
 import jakarta.ejb.Stateless;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lk.techmart.core.dto.CustomerDTO;
@@ -8,12 +9,14 @@ import lk.techmart.core.entity.Customer;
 import lk.techmart.core.entity.CustomerStatus;
 import lk.techmart.core.entity.User;
 import lk.techmart.core.service.CustomerService;
+import lk.techmart.ejb.interceptor.PerformanceInterceptor;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
+@Interceptors(PerformanceInterceptor.class)
 public class CustomerServiceBean implements CustomerService {
 
     @PersistenceContext(unitName = "techmartPU")
@@ -114,6 +117,66 @@ public class CustomerServiceBean implements CustomerService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public CustomerDTO updateProfile(Long customerId, String firstName, String lastName, String email, String phone, String address) throws Exception {
+        Customer customer = em.find(Customer.class, customerId);
+
+        if (customer == null) {
+            throw new Exception("Customer not found!");
+        }
+
+        customer.setFirstName(firstName);
+        customer.setLastName(lastName);
+        customer.setEmail(email);
+        customer.setPhone(phone);
+        customer.setAddress(address);
+
+        em.merge(customer);
+        CustomerDTO dto = new CustomerDTO();
+        dto.setCustomerId(customer.getCustomerId());
+        dto.setFirstName(customer.getFirstName());
+        dto.setLastName(customer.getLastName());
+        dto.setEmail(customer.getEmail());
+        dto.setPhone(customer.getPhone());
+        dto.setAddress(customer.getAddress());
+
+        return dto;
+    }
+
+    @Override
+    public void updatePassword(Long customerId, String currentPassword, String newPassword) throws Exception {
+        Customer customer = em.find(Customer.class, customerId);
+
+        if (customer == null) {
+            throw new Exception("Customer not found!");
+        }
+
+        if (!customer.getPassword().equals(currentPassword)) {
+            throw new Exception("Current password is incorrect.");
+        }
+
+        customer.setPassword(newPassword);
+        em.merge(customer);
+    }
+
+    @Override
+    public CustomerDTO getCustomerById(Long customerId) throws Exception {
+        Customer customer = em.find(Customer.class, customerId);
+        if (customer == null) {
+            throw new Exception("Customer not found");
+        }
+
+        CustomerDTO dto = new CustomerDTO();
+        dto.setCustomerId(customer.getCustomerId());
+        dto.setFirstName(customer.getFirstName());
+        dto.setLastName(customer.getLastName());
+        dto.setEmail(customer.getEmail());
+        dto.setPhone(customer.getPhone());
+        dto.setAddress(customer.getAddress());
+
+        return dto;
     }
 
 }

@@ -2,12 +2,14 @@ package lk.techmart.ejb;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lk.techmart.core.dto.OrderDTO;
 import lk.techmart.core.entity.*;
 import lk.techmart.core.service.InventoryService;
 import lk.techmart.core.service.OrderService;
+import lk.techmart.ejb.interceptor.PerformanceInterceptor;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Stateless
+@Interceptors(PerformanceInterceptor.class)
 public class OrderServiceBean implements OrderService {
 
     @PersistenceContext(unitName = "techmartPU")

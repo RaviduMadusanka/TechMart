@@ -41,13 +41,14 @@
         </div>
 
         <nav class="flex-1 p-4 space-y-2">
-            <a href="?view=overview" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "overview".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📊 Dashboard Overview</a>
-            <a href="?view=products" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "products".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">🛍 Products Management</a>
-            <a href="?view=categories" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "categories".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Categories Management</a>
-            <a href="?view=brands" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "brands".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📁 Brand Management</a>
-            <a href="?view=inventory" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "inventory".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📦 Inventory Management</a>
-            <a href="?view=orders" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "orders".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">📑 Orders Management</a>
-            <a href="?view=users" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "users".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">👥 Users Management</a>
+            <a href="?view=overview" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "overview".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">Dashboard Overview</a>
+            <a href="?view=products" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "products".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">Products Management</a>
+            <a href="?view=categories" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "categories".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">Categories Management</a>
+            <a href="?view=brands" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "brands".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">Brand Management</a>
+            <a href="?view=inventory" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "inventory".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">Inventory Management</a>
+            <a href="?view=orders" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "orders".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">Orders Management</a>
+            <a href="?view=users" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "users".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">Users Management</a>
+            <a href="?view=performance" class="flex items-center gap-3 px-5 py-3 rounded-xl transition <%= "performance".equals(view) ? "bg-white/15 font-semibold" : "hover:bg-white/10" %>">Performance Monitoring</a>
         </nav>
 
         <div class="p-4 border-t border-blue-800">
@@ -80,6 +81,8 @@
         <jsp:include page="views/inventory-content.jsp" />
         <% } else if ("users".equals(view)) { %>
         <jsp:include page="views/users-content.jsp" />
+        <% } else if ("performance".equals(view)) { %>
+        <jsp:include page="views/performance-content.jsp" />
         <% } else { %>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

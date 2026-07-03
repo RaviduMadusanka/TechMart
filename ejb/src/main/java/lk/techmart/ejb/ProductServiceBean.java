@@ -2,17 +2,20 @@ package lk.techmart.ejb;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lk.techmart.core.dto.*;
 import lk.techmart.core.entity.*;
 import lk.techmart.core.service.ProductService;
+import lk.techmart.ejb.interceptor.PerformanceInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
+@Interceptors(PerformanceInterceptor.class)
 public class ProductServiceBean implements ProductService {
 
     @PersistenceContext(unitName = "techmartPU")
