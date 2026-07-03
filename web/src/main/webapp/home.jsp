@@ -6,6 +6,9 @@
     List<CategoryDTO> categoriesList = (List<CategoryDTO>) request.getAttribute("categoriesList");
     List<ProductDTO> productsList = (List<ProductDTO>) request.getAttribute("productsList");
 
+    String selectedCategory = request.getParameter("category");
+    String selectedSort = request.getParameter("sort");
+
     if (categoriesList == null || productsList == null) {
         response.sendRedirect(request.getContextPath() + "/home");
         return;
@@ -99,6 +102,7 @@
                     <%
                         if (categoriesList != null) {
                             for (CategoryDTO c : categoriesList) {
+                                String sel = (selectedCategory != null && selectedCategory.equals(String.valueOf(c.getCategoryId()))) ? "selected" : "";
                     %>
                     <option value="<%= c.getCategoryId() %>"><%= c.getName() %></option>
                     <%
@@ -106,12 +110,11 @@
                         }
                     %>
                 </select>
-                <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
-                    <option>Sort: Featured</option>
-                    <option>Price: Low to High</option>
-                    <option>Price: High to Low</option>
-                    <option>Newest First</option>
-                    <option>Best Rated</option>
+                <select id="sortSelect" onchange="filterProducts()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+                    <option value="" <%= selectedSort == null || selectedSort.isEmpty() ? "selected" : "" %>>Sort: Featured</option>
+                    <option value="price_asc" <%= "price_asc".equals(selectedSort) ? "selected" : "" %>>Price: Low to High</option>
+                    <option value="price_desc" <%= "price_desc".equals(selectedSort) ? "selected" : "" %>>Price: High to Low</option>
+                    <option value="newest" <%= "newest".equals(selectedSort) ? "selected" : "" %>>Newest First</option>
                 </select>
             </div>
         </div>
@@ -180,9 +183,10 @@
         </div>
 
         <div class="text-center mt-10">
-            <button class="border-2 border-brand-600 text-brand-600 font-semibold px-8 py-3 rounded-lg hover:bg-brand-600 hover:text-white transition-all duration-200">
+            <a href="advance-search"
+               class="inline-block border-2 border-brand-600 text-brand-600 font-semibold px-8 py-3 rounded-lg hover:bg-brand-600 hover:text-white transition-all duration-200">
                 Load More Products
-            </button>
+            </a>
         </div>
     </section>
 
@@ -201,5 +205,27 @@
         </div>
     </section>
 </main>
+<script>
+    function filterProducts() {
+        const category = document.getElementById('categorySelect').value;
+        const sort = document.getElementById('sortSelect').value;
+
+        let url = new URL(window.location.href);
+
+        if (category) {
+            url.searchParams.set('category', category);
+        } else {
+            url.searchParams.delete('category');
+        }
+
+        if (sort) {
+            url.searchParams.set('sort', sort);
+        } else {
+            url.searchParams.delete('sort');
+        }
+
+        window.location.href = url.toString();
+    }
+</script>
 
 <%@ include file="WEB-INF/includes/footer.jsp" %>

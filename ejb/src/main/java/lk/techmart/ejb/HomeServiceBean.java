@@ -3,6 +3,7 @@ package lk.techmart.ejb;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import lk.techmart.core.dto.BrandDTO;
 import lk.techmart.core.dto.CategoryDTO;
 import lk.techmart.core.dto.ProductDTO;
@@ -55,4 +56,48 @@ public class HomeServiceBean implements HomeService {
 
         return dtos;
     }
+
+    @Override
+    public List<ProductDTO> getFilteredProducts(Long categoryId, String sort, int limit) {
+
+        StringBuilder jpql = new StringBuilder("SELECT p FROM Product p ");
+
+        if (categoryId != null) {
+            jpql.append("WHERE p.category.categoryId = :catId ");
+        }
+
+        if ("price_asc".equals(sort)) {
+            jpql.append("ORDER BY p.price ASC");
+        } else if ("price_desc".equals(sort)) {
+            jpql.append("ORDER BY p.price DESC");
+        } else {
+            jpql.append("ORDER BY p.productId DESC");
+        }
+
+        TypedQuery<Product> query = em.createQuery(jpql.toString(), Product.class);
+
+        if (categoryId != null) {
+            query.setParameter("catId", categoryId);
+        }
+
+        query.setMaxResults(limit);
+
+        List<Product> entities = query.getResultList();
+        List<ProductDTO> dtos = new ArrayList<>();
+
+        for (Product p : entities) {
+
+            ProductDTO dto = new ProductDTO();
+
+            dto.setProductId(p.getProductId());
+            dto.setProductName(p.getProductName());
+            dto.setPrice(p.getPrice());
+            dto.setImageUrl(p.getImageUrl());
+
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
 }

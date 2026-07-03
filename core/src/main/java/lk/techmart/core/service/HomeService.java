@@ -11,5 +11,6 @@ public interface HomeService {
 
     List<CategoryDTO> getAllCategories();
     List<ProductDTO> getLatestProducts(int limit);
+    List<ProductDTO> getFilteredProducts(Long categoryId, String sort, int limit);
 
 }
