@@ -119,7 +119,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item py-2" href="orderHistory.jsp">
+                            <a class="dropdown-item py-2" href="order-history">
                                 📦 Orders
                             </a>
                         </li>

@@ -34,9 +34,11 @@ public class ProfileServlet extends HttpServlet {
         try {
 
             Long customerId = (Long) session.getAttribute("loggedUserId");
+            System.out.println("Session customerId = " + customerId);
 
             CustomerDTO fullCustomer = customerService.getCustomerById(customerId);
             request.setAttribute("customer", fullCustomer);
+            System.out.println("DB customer email = " + fullCustomer.getEmail());
 
 
         } catch (Exception e) {

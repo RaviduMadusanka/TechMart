@@ -82,6 +82,11 @@ public class AuthServlet extends HttpServlet {
             }
 
         } else if ("login".equals(action)) {
+            HttpSession oldSession = req.getSession(false);
+            if (oldSession != null) {
+                oldSession.invalidate();
+            }
+
             String email = req.getParameter("email");
             String password = req.getParameter("password");
 
@@ -108,6 +113,9 @@ public class AuthServlet extends HttpServlet {
                 session.setAttribute("loggedUserName", customer.getFirstName() + " " + customer.getLastName());
                 session.setAttribute("userRole", "CUSTOMER");
                 session.setAttribute("customer", customer);
+
+                System.out.println(customer.getCustomerId());
+                System.out.println(customer.getEmail());
 
                 try {
                     ShoppingCartBean cartBean = (ShoppingCartBean) session.getAttribute("shoppingCart");

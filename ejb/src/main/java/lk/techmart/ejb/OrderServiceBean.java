@@ -264,5 +264,27 @@ public class OrderServiceBean implements OrderService {
         return (order != null) ? order.getCustomer().getCustomerId() : null;
     }
 
+    @Override
+    public List<OrderDTO> getCustomerOrders(Long customerId) {
+        List<Orders> orders = em.createQuery("SELECT o FROM Orders o WHERE o.customer.customerId = :cid ORDER BY o.orderDate DESC", Orders.class)
+                .setParameter("cid", customerId)
+                .getResultList();
+
+        List<OrderDTO> dtos = new ArrayList<>();
+        for (Orders o : orders) {
+            OrderDTO dto = new OrderDTO();
+            dto.setOrderId(o.getOrderId());
+            dto.setOrderDate(String.valueOf(o.getOrderDate()));
+            dto.setTotalAmount(o.getTotalAmount());
+            dto.setShipping_address(o.getShipping_address());
+
+            if (o.getOrderStatus() != null) {
+                dto.setStatus(o.getOrderStatus().getStatusName());
+            }
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
 
 }

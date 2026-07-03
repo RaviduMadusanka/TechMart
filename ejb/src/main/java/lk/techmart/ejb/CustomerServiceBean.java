@@ -55,6 +55,8 @@ public class CustomerServiceBean implements CustomerService {
                 .setParameter("password", password)
                 .getResultList();
 
+        System.out.println("Found customers = " + customers.size());
+
         if (!customers.isEmpty()) {
             Customer c = customers.get(0);
             CustomerDTO dto = new CustomerDTO();

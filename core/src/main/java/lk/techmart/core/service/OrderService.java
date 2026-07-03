@@ -16,4 +16,6 @@ public interface OrderService {
     boolean processPaymentSuccess(Long orderId);
     Long getCustomerIdByOrderId(Long orderId);
 
+    List<OrderDTO> getCustomerOrders(Long customerId);
+
 }

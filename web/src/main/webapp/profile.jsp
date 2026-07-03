@@ -73,7 +73,6 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-            <!-- Sidebar -->
             <aside class="lg:col-span-1">
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sticky top-4">
                     <nav class="flex flex-col gap-1">
@@ -104,11 +103,8 @@
                     </nav>
                 </div>
             </aside>
-
-            <!-- Main content -->
             <div class="lg:col-span-3 flex flex-col gap-8">
 
-                <!-- Edit profile form -->
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100">
                         <h2 class="text-lg font-bold text-gray-900">Personal Information</h2>
@@ -155,7 +151,6 @@
                     </form>
                 </div>
 
-                <!-- Change password -->
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100">
                         <h2 class="text-lg font-bold text-gray-900">Change Password</h2>
@@ -188,7 +183,6 @@
                     </form>
                 </div>
 
-                <!-- Account overview + recent orders -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
                         <p class="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Customer ID</p>
