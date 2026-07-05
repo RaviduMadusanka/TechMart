@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN"
+        "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+
+    <admin-object-resource
+            jndi-name="jms/OrderNotificationQueue"
+            res-type="jakarta.jms.Queue"
+            res-adapter="jmsra"
+            enabled="true">
+        <property name="Name" value="OrderNotificationQueue"/>
+    </admin-object-resource>
+
+    <admin-object-resource
+            jndi-name="jms/InventoryAlertTopic"
+            res-type="jakarta.jms.Topic"
+            res-adapter="jmsra"
+            enabled="true">
+        <property name="Name" value="InventoryAlertTopic"/>
+    </admin-object-resource>
+
+</resources>

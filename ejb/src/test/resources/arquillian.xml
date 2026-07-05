@@ -7,7 +7,6 @@
     <container qualifier="payara" default="true">
         <configuration>
             <property name="payaraHome">C:\Users\user\Downloads\BCD-1\payara-6.2025.11\payara6</property>
-
             <property name="adminPort">4848</property>
         </configuration>
     </container>
