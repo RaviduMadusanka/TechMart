@@ -141,7 +141,7 @@
                                             ? p.getCategory().getName() : "TechMart";
                         %>
                         <div class="product-card bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                            <a href="product-detail.jsp?id=<%= p.getProductId() %>">
+                            <a href="<%= request.getContextPath() %>/single-product?id=<%= p.getProductId() %>">
                                 <div class="relative overflow-hidden bg-gray-50 h-48 flex items-center justify-center">
                                     <% if (!imageSrc.isEmpty()) { %>
                                     <img src="<%= imageSrc %>" class="object-cover h-full w-full" />
@@ -156,15 +156,20 @@
                             </a>
                             <div class="p-4">
                                 <p class="text-xs text-brand-600 font-medium mb-1 uppercase tracking-wide"><%= catName %></p>
-                                <a href="product-detail.jsp?id=<%= p.getProductId() %>">
+                                <a href="<%= request.getContextPath() %>/single-product?id=<%= p.getProductId() %>">
                                     <h3 class="text-sm font-semibold text-gray-900 hover:text-brand-600 transition-colors mb-2 line-clamp-2"><%= p.getProductName() %></h3>
                                 </a>
 
                                 <div class="flex items-center justify-between mt-3">
                                     <span class="text-lg font-bold text-gray-900">Rs.<%= priceStr %></span>
-                                    <button type="button" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors active:scale-95">
-                                        + Cart
-                                    </button>
+                                    <form action="<%= request.getContextPath() %>/cart-action" method="post">
+                                        <input type="hidden" name="productId" value="<%= p.getProductId() %>"/>
+                                        <input type="hidden" name="action" value="add"/>
+                                        <input type="hidden" name="qty" value="1"/>
+                                        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors active:scale-95">
+                                            + Cart
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

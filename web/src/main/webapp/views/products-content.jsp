@@ -104,6 +104,11 @@
                         <input type="file" name="secondaryImage" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 border border-slate-200 rounded-lg p-1 cursor-pointer transition-all">
                     </div>
 
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Third Image (Optional)</label>
+                        <input type="file" name="thirdImage" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 border border-slate-200 rounded-lg p-1 cursor-pointer transition-all">
+                    </div>
+
                     <div class="col-span-2 mt-2">
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Pricing & Specs</h4>
                     </div>

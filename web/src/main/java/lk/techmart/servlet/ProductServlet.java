@@ -27,7 +27,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @WebServlet("/ProductServlet")
-@MultipartConfig(maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10)
+@MultipartConfig(maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 20)
 public class ProductServlet extends HttpServlet {
 
     @EJB
@@ -37,7 +37,7 @@ public class ProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
 
-            Long userId = (Long) req.getSession().getAttribute("userId");
+            Long userId = (Long) req.getSession().getAttribute("loggedUserId");
             String action = req.getParameter("action");
             ProductDTO dto = new ProductDTO();
             String productCode = "";
@@ -104,6 +104,16 @@ public class ProductServlet extends HttpServlet {
             if (primaryPart != null && primaryPart.getSize() > 0) {
                 String savedImagePath = saveFile(primaryPart, productCode, "primary");
                 dto.setImageUrl(savedImagePath);
+            }
+
+            Part secondaryPart = req.getPart("secondaryImage");
+            if (secondaryPart != null && secondaryPart.getSize() > 0) {
+                saveFile(secondaryPart, productCode, "image1");
+            }
+
+            Part thirdPart = req.getPart("thirdImage");
+            if (thirdPart != null && thirdPart.getSize() > 0) {
+                saveFile(thirdPart, productCode, "image2");
             }
 
             if ("update".equals(action)) {

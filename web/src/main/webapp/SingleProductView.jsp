@@ -7,8 +7,27 @@
 %>
 <%
     ProductDTO pd = (ProductDTO) request.getAttribute("product");
-    String image1 = pd.getImageUrl().replace("primary.png", "image1.png");
-    String image2 = pd.getImageUrl().replace("primary.png", "image2.png");
+    String primaryImageUrl = pd.getImageUrl();
+
+    String imgFolder = "";
+    String imgExt = "";
+    if (primaryImageUrl != null) {
+        int slashIdx = primaryImageUrl.lastIndexOf('/');
+        int dotIdx = primaryImageUrl.lastIndexOf('.');
+        if (slashIdx >= 0) imgFolder = primaryImageUrl.substring(0, slashIdx);
+        if (dotIdx > slashIdx) imgExt = primaryImageUrl.substring(dotIdx);
+    }
+
+    String uploadBaseDir = System.getProperty("user.home") + java.io.File.separator + "TechMartImages";
+
+    String image1 = null;
+    String image2 = null;
+    if (!imgFolder.isEmpty()) {
+        java.io.File f1 = new java.io.File(uploadBaseDir + java.io.File.separator + imgFolder, "image1" + imgExt);
+        java.io.File f2 = new java.io.File(uploadBaseDir + java.io.File.separator + imgFolder, "image2" + imgExt);
+        if (f1.exists()) image1 = imgFolder + "/image1" + imgExt;
+        if (f2.exists()) image2 = imgFolder + "/image2" + imgExt;
+    }
 %>
 <%@ include file="WEB-INF/includes/header.jsp" %>
 
@@ -33,20 +52,24 @@
                 </div>
 
                 <div class="flex gap-3">
-                    <div class="w-20 h-20 bg-gray-100 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-brand-500 overflow-hidden"
+                    <div class="w-20 h-20 bg-gray-100 rounded-lg border-2 border-brand-500 cursor-pointer hover:border-brand-500 overflow-hidden"
                          onclick="document.getElementById('mainProductImage').src='<%= request.getContextPath() %>/image?file=<%= p.getImageUrl() %>'">
                         <img src="<%= request.getContextPath() %>/image?file=<%= p.getImageUrl() %>" class="w-full h-full object-cover">
                     </div>
 
+                    <% if (image1 != null) { %>
                     <div class="w-20 h-20 bg-gray-100 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-brand-500 overflow-hidden"
                          onclick="document.getElementById('mainProductImage').src='<%= request.getContextPath() %>/image?file=<%= image1 %>'">
                         <img src="<%= request.getContextPath() %>/image?file=<%= image1 %>" class="w-full h-full object-cover">
                     </div>
+                    <% } %>
 
+                    <% if (image2 != null) { %>
                     <div class="w-20 h-20 bg-gray-100 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-brand-500 overflow-hidden"
                          onclick="document.getElementById('mainProductImage').src='<%= request.getContextPath() %>/image?file=<%= image2 %>'">
                         <img src="<%= request.getContextPath() %>/image?file=<%= image2 %>" class="w-full h-full object-cover">
                     </div>
+                    <% } %>
                 </div>
             </div>
 
@@ -86,9 +109,10 @@
                 </div>
 
                 <div class="space-y-3">
-                    <form action="CartServlet" method="post" class="flex gap-3">
+                    <form action="${pageContext.request.contextPath}/cart-action" method="post" class="flex gap-3">
                         <input type="hidden" name="productId" value="${product.productId}"/>
                         <input type="hidden" name="action" value="add"/>
+                        <input type="hidden" name="qty" value="1"/>
 
                         <button type="submit" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-lg transition-colors active:scale-[0.98] flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
