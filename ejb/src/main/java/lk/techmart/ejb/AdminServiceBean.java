@@ -10,6 +10,7 @@ import lk.techmart.core.service.AdminService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lk.techmart.core.service.InventoryService;
+import lk.techmart.core.util.PasswordUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,13 +28,16 @@ public class AdminServiceBean implements AdminService {
 
     @Override
     public AdminDTO loginAdmin(String email, String password) {
-        List<User> admins = em.createQuery("SELECT u FROM User u WHERE u.email = :email AND u.password = :password", User.class)
+        List<User> admins = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
                 .setParameter("email", email)
-                .setParameter("password", password)
                 .getResultList();
 
         if (!admins.isEmpty()) {
             User admin = admins.get(0);
+
+            if (!PasswordUtil.verifyPassword(password, admin.getPassword())) {
+                return null;
+            }
 
             if (admin.getStatus() != null && !"ACTIVE".equals(admin.getStatus().getStatusName())) {
                 return null;
@@ -87,7 +91,7 @@ public class AdminServiceBean implements AdminService {
             User admin = new User();
             admin.setUsername(dto.getUsername());
             admin.setEmail(dto.getEmail());
-            admin.setPassword(dto.getPassword());
+            admin.setPassword(PasswordUtil.hashPassword(dto.getPassword()));
 
             if (dto.getUserTypeId() != null) {
                 UserType ut = em.find(UserType.class, dto.getUserTypeId());

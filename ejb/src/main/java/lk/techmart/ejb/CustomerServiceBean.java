@@ -9,6 +9,7 @@ import lk.techmart.core.entity.Customer;
 import lk.techmart.core.entity.CustomerStatus;
 import lk.techmart.core.entity.User;
 import lk.techmart.core.service.CustomerService;
+import lk.techmart.core.util.PasswordUtil;
 import lk.techmart.ejb.interceptor.PerformanceInterceptor;
 
 import java.text.SimpleDateFormat;
@@ -29,7 +30,7 @@ public class CustomerServiceBean implements CustomerService {
             customer.setFirstName(dto.getFirstName());
             customer.setLastName(dto.getLastName());
             customer.setEmail(dto.getEmail());
-            customer.setPassword(dto.getPassword());
+            customer.setPassword(PasswordUtil.hashPassword(dto.getPassword()));
             customer.setPhone(dto.getPhone());
             customer.setAddress(dto.getAddress());
 
@@ -50,15 +51,19 @@ public class CustomerServiceBean implements CustomerService {
     @Override
     public CustomerDTO loginCustomer(String email, String password) {
 
-        List<Customer> customers = em.createQuery("SELECT c FROM Customer c WHERE c.email = :email AND c.password = :password", Customer.class)
+        List<Customer> customers = em.createQuery("SELECT c FROM Customer c WHERE c.email = :email", Customer.class)
                 .setParameter("email", email)
-                .setParameter("password", password)
                 .getResultList();
 
         System.out.println("Found customers = " + customers.size());
 
         if (!customers.isEmpty()) {
             Customer c = customers.get(0);
+
+            if (!PasswordUtil.verifyPassword(password, c.getPassword())) {
+                return null;
+            }
+
             CustomerDTO dto = new CustomerDTO();
             dto.setCustomerId(c.getCustomerId());
             dto.setFirstName(c.getFirstName());
@@ -155,11 +160,11 @@ public class CustomerServiceBean implements CustomerService {
             throw new Exception("Customer not found!");
         }
 
-        if (!customer.getPassword().equals(currentPassword)) {
+        if (!PasswordUtil.verifyPassword(currentPassword, customer.getPassword())) {
             throw new Exception("Current password is incorrect.");
         }
 
-        customer.setPassword(newPassword);
+        customer.setPassword(PasswordUtil.hashPassword(newPassword));
         em.merge(customer);
     }
 
